@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.7 — 2026-09-17
+
+- Added an optional two-page spread mode with a dedicated toolbar button and View-menu toggle.
+- In two-page mode, `Fit Width` calculates the scale for the whole spread so both pages fit side by side.
+- `Fit Height` also keeps both pages visible while respecting page height.
+- Left/Up and Right/Down navigation moves by spreads in two-page mode (`1–2 → 3–4 → 5–6`).
+- Switching between one-page and two-page layouts preserves the current reading position and reuses already rendered page pixmaps while sharper renders load.
+- Added integration coverage for two-page layout pairing, spread-aware fit-width scaling, and spread navigation.
+
 ## 0.3.6 — 2026-09-17
 
 - Fixed EPUB 2 cover detection when a book contains both `<meta name="cover">` pointing to an image and a guide `type="cover"` pointing to an XHTML title page.
