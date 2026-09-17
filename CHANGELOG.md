@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.2 — 2026-09-17
+
+- macOS release assets now include the Folio version in the DMG filename, for example `Folio-0.3.2-macOS-arm64.dmg`.
+- SHA-256 checksum files use the same versioned filename.
+- Updated release documentation and download instructions for versioned assets.
+- Bumped the application version to 0.3.2.
+
 ## 0.3.1 — 2026-09-17
 
 - Reworked the sidebar tabs so short labels fit cleanly in narrow layouts (`Books`, `TOC`, `Marks`).
