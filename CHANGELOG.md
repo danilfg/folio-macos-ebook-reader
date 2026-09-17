@@ -2,6 +2,20 @@
 
 All notable changes to Folio are documented here.
 
+## 0.3.0 — 2026-09-17
+
+### Added
+- First-page book preview card in the library sidebar.
+- Independent background export worker so reading and rendering remain responsive while PDF export runs.
+- Modern scrollbar styling without legacy arrow buttons.
+
+### Changed
+- Cleaner page navigation controls with spin-box arrows removed and tighter toolbar styling.
+- Sidebar tabs use a modern segmented/pill appearance with hover and selected states.
+- Toolbar Export button now starts PDF export directly instead of opening a one-item popup menu.
+- Zoom preserves the currently rendered page image immediately and refreshes higher-quality pixels in the background, avoiding white-page flashes.
+- Version bumped to 0.3.0.
+
 ## 0.2.0 — 2026-09-17
 
 ### Added
