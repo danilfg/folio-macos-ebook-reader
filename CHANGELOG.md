@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.8 — 2026-09-17
+
+- Rebuilt the macOS disk image as a branded installer-style DMG using `dmgbuild`.
+- The mounted Folio volume now uses the Folio application icon instead of the generic disk-image appearance.
+- The Finder window opens in icon view with `Folio.app` on the left and an `Applications` shortcut on the right.
+- Added a built-in drag-to-Applications arrow background and fixed icon positions for a more familiar macOS installation flow.
+- Kept the existing versioned DMG filename and SHA-256 release asset naming.
+
 ## 0.3.7 — 2026-09-17
 
 - Added an optional two-page spread mode with a dedicated toolbar button and View-menu toggle.
