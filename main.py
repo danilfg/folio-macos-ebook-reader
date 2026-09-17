@@ -2,7 +2,7 @@
 import sys
 
 if '--worker' in sys.argv:
-    from folio.engine import worker
+    from folio.engine_v035 import worker
     worker()
 else:
     from folio.app import main
