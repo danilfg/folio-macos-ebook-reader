@@ -42,11 +42,16 @@ class WindowReaderMixin:
         self.render_debounce_timer.start(350)
 
     def set_zoom(self, value):
+        anchor_page = self.page
         if value == getattr(self, 'zoom_value', None):
             self.sync_zoom_controls()
+            if value == 'Fit Height' and self.meta:
+                QTimer.singleShot(0, lambda p=anchor_page: self.go(p, force=True))
             return
         self.zoom_value = value
         self.refresh_page_geometry()
+        if value == 'Fit Height' and self.meta:
+            QTimer.singleShot(0, lambda p=anchor_page: self.go(p, force=True))
 
     def zoom_step(self, direction):
         values = self.zoom_numeric_values
@@ -195,7 +200,7 @@ class WindowReaderMixin:
             return
         suffix = 'FB2.ZIP' if self.meta['path'].lower().endswith('.fb2.zip') else Path(self.meta['path']).suffix[1:].upper()
         self.statusBar().showMessage(
-            f'{suffix}  ·  Page {self.page + 1} of {self.meta["count"]}  ·  Scroll to read   ⌘F search   ⌘P print'
+            f'{suffix} ·  Page {self.page + 1} of {self.meta["count"]}  ·  Scroll to read   ⌘F search   ☘P print'
         )
 
     def focus_search(self):

@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 import sys
 
-from PySide6.QtCore import QByteArray, QEvent, QPoint, QRectF, QSize, Qt, QProcess, QTimer, Signal
+from PySide6.QtCore import QByteArray, QEvent, QPoint, QRectF, Qt, QProcess, QTimer, Signal
 from PySide6.QtGui import QAction, QColor, QFont, QIcon, QImage, QKeySequence, QPainter, QPixmap
 from PySide6.QtPrintSupport import QPrintDialog, QPrinter
 from PySide6.QtSvg import QSvgRenderer
@@ -138,6 +138,8 @@ class PageLabel(QLabel):
 
 
 class BookListItemWidget(QWidget):
+    removeRequested = Signal()
+
     def __init__(self, title: str, meta: str, ext: str, dark: bool = False):
         super().__init__()
         self.setObjectName('bookListCard')
@@ -145,8 +147,8 @@ class BookListItemWidget(QWidget):
         self.selected = False
 
         root = QHBoxLayout(self)
-        root.setContentsMargins(12, 10, 12, 10)
-        root.setSpacing(12)
+        root.setContentsMargins(10, 9, 8, 9)
+        root.setSpacing(10)
 
         self.thumb = QLabel(ext)
         self.thumb.setObjectName('bookListThumb')
@@ -169,8 +171,17 @@ class BookListItemWidget(QWidget):
         self.meta.setWordWrap(True)
         text_box.addWidget(self.meta)
         text_box.addStretch(1)
-
         root.addLayout(text_box, 1)
+
+        self.remove_button = QToolButton()
+        self.remove_button.setObjectName('bookRemoveButton')
+        self.remove_button.setIcon(line_icon('close', 15))
+        self.remove_button.setIconSize(QSize(15, 15))
+        self.remove_button.setFixedSize(24, 24)
+        self.remove_button.setToolTip('Remove from Library')
+        self.remove_button.clicked.connect(self.removeRequested.emit)
+        root.addWidget(self.remove_button, 0, Qt.AlignmentFlag.AlignTop)
+
         self.apply_state()
 
     def set_preview(self, pixmap: QPixmap | None, fallback: str = ''):
@@ -190,29 +201,34 @@ class BookListItemWidget(QWidget):
 
     def apply_state(self):
         if self.dark:
-            panel = '#20262f'
+            panel = '#191d24'
             thumb_bg = '#11161d'
-            border = '#34404f'
-            hover = '#243a30'
-            accent = '#38b27d'
+            border = '#384150'
+            selected_bg = '#213a30'
+            accent = '#53b487'
             title = '#eef2f7'
             meta = '#a5b2c4'
+            remove_hover = '#3a2c31'
         else:
-            panel = '#ffffff'
+            panel = '#f8f6f1'
             thumb_bg = '#eef2ed'
             border = '#d6ddd4'
-            hover = '#dff0e6'
-            accent = '#11875d'
+            selected_bg = '#e3f1e8'
+            accent = '#16865f'
             title = '#24332d'
             meta = '#6f7872'
+            remove_hover = '#f3e4e4'
 
-        bg = hover if self.selected else panel
-        line = accent if self.selected else border
+        bg = selected_bg if self.selected else 'transparent'
+        line = accent if self.selected else 'transparent'
+        line_width = '2px' if self.selected else '1px'
         self.setStyleSheet(
-            f"QWidget#bookListCard{{background:{bg};border:1px solid {line};border-radius:16px;}}"
+            f"QWidget#bookListCard{{background:{bg};border:{line_width} solid {line};border-radius:14px;}}"
             f"QLabel#bookListThumb{{background:{thumb_bg};border:1px solid {border};border-radius:10px;padding:2px;color:{meta};font-size:10px;font-weight:600;}}"
             f"QLabel#bookListTitle{{color:{title};font-size:14px;font-weight:600;border:0;background:transparent;}}"
             f"QLabel#bookListMeta{{color:{meta};font-size:11px;border:0;background:transparent;}}"
+            f"QToolButton#bookRemoveButton{{border:0;background:transparent;border-radius:12px;padding:3px;}}"
+            f"QToolButton#bookRemoveButton:hover{{background:{remove_hover};border:0;}}"
         )
 
 
