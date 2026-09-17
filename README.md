@@ -20,7 +20,31 @@
 
 Folio targets **macOS 14 Sonoma or newer**. Release builds bundle the required DjVu command-line tools, so end users do not need Python, Homebrew or `Install.command`.
 
-> If a release is built without an Apple Developer ID certificate, macOS may show the standard unidentified-developer warning. Right-click Folio → **Open** for that build. Maintainers can enable Developer ID signing and notarization through repository secrets; see [Releasing](docs/RELEASING.md).
+### If macOS says “Folio Not Opened”
+
+Current Folio builds are not yet notarized with an Apple Developer ID, so macOS Gatekeeper may show:
+
+> “Apple could not verify ‘Folio’ is free of malware that may harm your Mac or compromise your privacy.”
+
+This warning is expected for the current unsigned/not-notarized release. To open Folio:
+
+**Method 1 — System Settings**
+
+1. Try to open **Folio** once and dismiss the warning.
+2. Open **System Settings → Privacy & Security**.
+3. Scroll down to the **Security** section.
+4. Find the message that **Folio was blocked from use because it is not from an identified developer**.
+5. Click **Open Anyway**.
+6. Confirm with your Mac password or Touch ID, then click **Open**.
+
+**Method 2 — Finder**
+
+1. Open **Applications** in Finder.
+2. Control-click or right-click **Folio**.
+3. Choose **Open**.
+4. Confirm **Open** when macOS asks again.
+
+You normally need to do this only once for that copy of the app. Future releases will support Developer ID signing and Apple notarization so this extra step is no longer required. Maintainer setup is documented in [Releasing](docs/RELEASING.md).
 
 ## Why Folio
 
