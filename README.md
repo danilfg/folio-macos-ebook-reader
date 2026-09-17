@@ -11,12 +11,19 @@
 
 **Apple Silicon (M1, M2, M3, M4 and newer):**
 
-**[Download the latest Folio DMG](https://github.com/danilfg/folio-macos-ebook-reader/releases/latest/download/Folio-macOS-arm64.dmg)**
+**[Open the latest Folio release](https://github.com/danilfg/folio-macos-ebook-reader/releases/latest)**
 
-1. Download `Folio-macOS-arm64.dmg` from GitHub Releases.
-2. Open the DMG.
-3. Drag **Folio.app** to **Applications**.
-4. Open Folio and drop a book into the window.
+Download the versioned DMG asset, for example:
+
+```text
+Folio-0.3.2-macOS-arm64.dmg
+```
+
+1. Open the latest GitHub Release.
+2. Download `Folio-<version>-macOS-arm64.dmg` under **Assets**.
+3. Open the DMG.
+4. Drag **Folio.app** to **Applications**.
+5. Open Folio and drop a book into the window.
 
 Folio targets **macOS 14 Sonoma or newer**. Release builds bundle the required DjVu command-line tools, so end users do not need Python, Homebrew or `Install.command`.
 
@@ -26,14 +33,14 @@ Current Folio builds are not yet notarized with an Apple Developer ID, so macOS 
 
 > “Apple could not verify ‘Folio’ is free of malware that may harm your Mac or compromise your privacy.”
 
-This warning is expected for the current unsigned/not-notarized release. To open Folio:
+To open Folio:
 
 **Method 1 — System Settings**
 
 1. Try to open **Folio** once and dismiss the warning.
 2. Open **System Settings → Privacy & Security**.
-3. Scroll down to the **Security** section.
-4. Find the message that **Folio was blocked from use because it is not from an identified developer**.
+3. Scroll to **Security**.
+4. Find the message that Folio was blocked.
 5. Click **Open Anyway**.
 6. Confirm with your Mac password or Touch ID, then click **Open**.
 
@@ -42,22 +49,23 @@ This warning is expected for the current unsigned/not-notarized release. To open
 1. Open **Applications** in Finder.
 2. Control-click or right-click **Folio**.
 3. Choose **Open**.
-4. Confirm **Open** when macOS asks again.
+4. Confirm **Open**.
 
-You normally need to do this only once for that copy of the app. Future releases will support Developer ID signing and Apple notarization so this extra step is no longer required. Maintainer setup is documented in [Releasing](docs/RELEASING.md).
+You normally need to do this only once for that copy of the app. Future releases will support Developer ID signing and Apple notarization.
 
 ## Why Folio
 
 Folio is intended for people who want a lightweight **Mac ebook reader**, **DjVu reader**, **PDF reader** and general-purpose offline document viewer without uploading books to a cloud service.
 
-- **Continuous vertical scrolling** — wheel and trackpad scrolling work through the whole book instead of page-by-page navigation only.
-- **Fast lazy rendering** — only visible and nearby pages are rendered, which keeps large textbooks responsive.
-- **PDF, DjVu, EPUB, FB2, MOBI and more** in one library.
-- **Text search** with page highlighting where the source format exposes text coordinates.
+- **Continuous vertical scrolling** with wheel and trackpad.
+- **Fast lazy rendering** of visible and nearby pages.
+- **PDF, DjVu, EPUB, FB2, MOBI and more** in one local library.
+- **Text search** where the source format exposes text.
 - **Bookmarks and reading position** stored locally.
-- **Chrome-style print preview step** before the native macOS print dialog.
-- **Zoom controls** in the toolbar and bottom-right reader controls.
-- **Export as…** menu, currently with optimized PDF export.
+- **Print preview** before the native macOS print dialog.
+- **Fit width, fit height and percentage zoom controls**.
+- **Background PDF export** so the reader stays usable during conversion.
+- **Keyboard page navigation** with arrow keys.
 - **Private by design** — no account, no telemetry, no cloud upload.
 
 ## Supported formats
@@ -78,7 +86,7 @@ Not supported: DRM, AZW3/KFX, CHM, CBR/RAR, DOC/DOCX and OCR generation.
 
 ## DjVu → PDF export
 
-Folio 0.2 replaced the old page-by-page PNG export path. DjVu export now uses **DjVuLibre's native multi-page PDF output in a single pass**, at 160 DPI with quality 80 compression. This avoids encoding every page to PNG first and is designed to be dramatically faster and smaller for large scanned books.
+Folio uses **DjVuLibre's native multi-page PDF output in a single pass**, at 160 DPI with quality 80 compression. This avoids encoding every page to PNG first and is designed to be dramatically faster and smaller for large scanned books.
 
 The exported PDF contains rendered page images. Existing hidden DjVu OCR text is not currently copied into the PDF output.
 
@@ -88,16 +96,10 @@ Put current application screenshots in [`docs/screenshots/`](docs/screenshots/RE
 
 - `reader-light.png` — main continuous reader view
 - `reader-dark.png` — dark mode
+- `library.png` — compact library cards with thumbnails
 - `print-preview.png` — print preview
-- `export-menu.png` — Export as… menu
 
-Once the first current screenshot is added, place this near the top of the README:
-
-```html
-<p align="center"><img src="docs/screenshots/reader-light.png" alt="Folio macOS ebook reader showing a PDF or DjVu book" width="1000"></p>
-```
-
-Also upload a 1280×640 project image in **GitHub → Settings → General → Social preview**. That image is used when the repository is shared on social networks and messengers.
+Also upload a 1280×640 project image in **GitHub → Settings → General → Social preview**.
 
 ## Keyboard shortcuts
 
@@ -105,7 +107,8 @@ Also upload a 1280×640 project image in **GitHub → Settings → General → S
 |---|---|
 | ⌘O | Open books |
 | ⌘⇧O | Add a folder |
-| ← / → | Previous / next page |
+| ← / ↑ | Previous page |
+| → / ↓ | Next page |
 | ⌘F | Search in the book |
 | ⌘D | Add / remove bookmark |
 | ⌘P | Print with preview |
@@ -117,8 +120,6 @@ Also upload a 1280×640 project image in **GitHub → Settings → General → S
 
 ## Build from source
 
-Development dependencies:
-
 ```bash
 brew install python@3.12 djvulibre
 python3.12 -m venv .venv
@@ -127,7 +128,7 @@ pip install -r requirements.txt
 python main.py
 ```
 
-Run tests (the suite generates its small redistributable fixtures automatically):
+Run tests:
 
 ```bash
 python -m unittest discover -s tests -v
@@ -140,23 +141,27 @@ pip install pyinstaller==6.16.0
 python build_macos.py --dmg --output dist
 ```
 
-Output:
+The local build script currently creates:
 
 ```text
 dist/Folio.app
 dist/Folio-macOS-arm64.dmg
 ```
 
-The build script asks PyInstaller to bundle `ddjvu`, `djvused`, `djvutxt`, `djvudump` and their linked libraries, then verifies that the app does not retain Homebrew library paths.
+The GitHub Release workflow renames the DMG to include the release version before publishing, for example:
+
+```text
+Folio-0.3.2-macOS-arm64.dmg
+```
 
 ## Architecture
 
-- `folio/app.py` — PySide6 desktop UI, continuous reader and print preview
+- `folio/app.py` — PySide6 desktop UI and reader shell
 - `folio/engine.py` — document engine running in a separate process over JSON Lines
 - `folio/storage.py` — local SQLite library, reading position and bookmarks
-- `build_macos.py` — Apple Silicon `.app` + DMG release builder
+- `build_macos.py` — Apple Silicon `.app` + DMG builder
 - `.github/workflows/ci.yml` — automated test suite
-- `.github/workflows/release.yml` — tag-driven macOS DMG release build
+- `.github/workflows/release.yml` — macOS release build and publishing
 
 ## Privacy
 
