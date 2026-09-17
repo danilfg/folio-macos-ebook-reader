@@ -23,19 +23,14 @@ class WindowUiMixin:
             action = menu.addAction(value, lambda checked=False, v=value: self.set_zoom(v))
             action.setCheckable(True)
             self.zoom_actions[value] = action
-        self.zoom_menu = menu
-
-    def show_zoom_menu(self):
-        self.zoom_menu.adjustSize()
-        pos = self.zoom_menu_button.mapToGlobal(QPoint(0, self.zoom_menu_button.height() + 4))
-        self.zoom_menu.exec(pos)
+        self.zoom_menu_button.setMenu(menu)
 
     def sync_zoom_controls(self):
         current = getattr(self, 'zoom_value', 'Fit Width')
         if hasattr(self, 'zoom_actions'):
             for value, action in self.zoom_actions.items():
                 action.setChecked(value == current)
-        label = current if current in ('Fit Width', 'Fit Page') else current
+        label = current
         if hasattr(self, 'zoom_footer_label'):
             self.zoom_footer_label.setText(label)
 
@@ -97,7 +92,7 @@ class WindowUiMixin:
         self.zoom_menu_button = QToolButton()
         self.zoom_menu_button.setIcon(line_icon('search'))
         self.zoom_menu_button.setToolTip('Zoom')
-        self.zoom_menu_button.clicked.connect(self.show_zoom_menu)
+        self.zoom_menu_button.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
         bar.addWidget(self.zoom_menu_button)
         self._build_zoom_menu()
 
@@ -157,5 +152,193 @@ class WindowUiMixin:
         self.books = QListWidget()
         self.books.setWordWrap(True)
         self.books.setSpacing(8)
-        self.books.itemClicked.c²Θ="25ΝΙ½±°ΉΝ•Ρ±¥Ήµ•ΉΠ΅EΠΉ±¥Ήµ•ΉΡ±…Ή±¥Ή!•ΉΡ•ΘπEΠΉ±¥Ήµ•ΉΡ±…Ή±¥ΉQ½ΐ¤(€€€€€€€Ν•±ΉΝΙ½±°ΉΝ•Ρ]¥‘•ΡI•Ν¥ι…‰±”΅QΙΥ”¤(€€€€€€€Ν•±ΉΝΙ½±°ΉΝ•Ρ=‰©•Ρ9…µ” Α…•Ι•„¤(€€€€€€€Ν•±ΉΑ…•Ν}½ΉΡ…¥Ή•Θ€τE]¥‘•Π ¤(€€€€€€€Ν•±ΉΑ…•Ν}½ΉΡ…¥Ή•ΘΉΝ•Ρ=‰©•Ρ9…µ” Α…•Ν½ΉΡ…¥Ή•Θ¤(€€€€€€€Ν•±ΉΑ…•Ν}±…ε½ΥΠ€τEY	½α1…ε½ΥΠ΅Ν•±ΉΑ…•Ν}½ΉΡ…¥Ή•Θ¤(€€€€€€€Ν•±ΉΑ…•Ν}±…ε½ΥΠΉΝ•Ρ½ΉΡ•ΉΡΝ5…Ι¥ΉΜ ΘΠ°€ΘΠ°€ΘΠ°€ΘΠ¤(€€€€€€€Ν•±ΉΑ…•Ν}±…ε½ΥΠΉΝ•ΡMΑ…¥Ή Δΰ¤(€€€€€€€Ν•±ΉΑ…•Ν}±…ε½ΥΠΉΝ•Ρ±¥Ήµ•ΉΠ΅EΠΉ±¥Ήµ•ΉΡ±…Ή±¥Ή!•ΉΡ•ΘπEΠΉ±¥Ήµ•ΉΡ±…Ή±¥ΉQ½ΐ¤(€€€€€€€Ν•±ΉΝΙ½±°ΉΝ•Ρ]¥‘•Π΅Ν•±ΉΑ…•Ν}½ΉΡ…¥Ή•Θ¤(€€€€€€€Ν•±ΉΝΙ½±°ΉΩ•ΙΡ¥…±MΙ½±±	…Θ ¤ΉΩ…±Υ•΅…Ή•Ή½ΉΉ•Π΅Ν•±Ή½Ή}ΝΙ½±°¤(€€€€€€€±…ε½ΥΠΉ…‘‘]¥‘•Π΅Ν•±ΉΝΡ…¬°€Δ¤(€€€€€€€Ν•±ΉΝΡ…¬Ή…‘‘]¥‘•Π΅Ν•±ΉΝΙ½±°¤((€€€€€€€Ν•±Ήι½½µ}™½½Ρ•Θ€τE]¥‘•Π ¤(€€€€€€€Ν•±Ήι½½µ}™½½Ρ•ΘΉΝ•Ρ=‰©•Ρ9…µ” ι½½µ½½Ρ•Θ¤(€€€€€€€ι±…ε½ΥΠ€τE!	½α1…ε½ΥΠ΅Ν•±Ήι½½µ}™½½Ρ•Θ¤(€€€€€€€ι±…ε½ΥΠΉΝ•Ρ½ΉΡ•ΉΡΝ5…Ι¥ΉΜ Δΐ°€Τ°€ΔΘ°€Τ¤(€€€€€€€ι±…ε½ΥΠΉ…‘‘MΡΙ•Ρ  Δ¤(€€€€€€€™½½Ρ•Ι}™¥Ρ}έ¥‘Ρ €τEQ½½±	ΥΡΡ½Έ ¤(€€€€€€€™½½Ρ•Ι}™¥Ρ}έ¥‘Ρ ΉΝ•Ρ%½Έ΅±¥Ή•}¥½Έ ™¥Ρ}έ¥‘Ρ ¤¤(€€€€€€€™½½Ρ•Ι}™¥Ρ}έ¥‘Ρ ΉΝ•ΡQ½½±Q¥ΐ ¥ΠΑ…”έ¥‘Ρ ¤(€€€€€€€™½½Ρ•Ι}™¥Ρ}έ¥‘Ρ Ή±¥­•Ή½ΉΉ•Π΅±…µ‰‘„θΝ•±ΉΝ•Ρ}ι½½΄ ¥Π]¥‘Ρ ¤¤(€€€€€€€ι±…ε½ΥΠΉ…‘‘]¥‘•Π΅™½½Ρ•Ι}™¥Ρ}έ¥‘Ρ ¤(€€€€€€€™½½Ρ•Ι}™¥Ρ}΅•¥΅Π€τEQ½½±	ΥΡΡ½Έ ¤(€€€€€€€™½½Ρ•Ι}™¥Ρ}΅•¥΅ΠΉΝ•Ρ%½Έ΅±¥Ή•}¥½Έ ™¥Ρ}Α…”¤¤(€€€€€€€™½½Ρ•Ι}™¥Ρ}΅•¥΅ΠΉΝ•ΡQ½½±Q¥ΐ ¥ΠΑ…”΅•¥΅Π¤(€€€€€€€™½½Ρ•Ι}™¥Ρ}΅•¥΅ΠΉ±¥­•Ή½ΉΉ•Π΅±…µ‰‘„θΝ•±ΉΝ•Ρ}ι½½΄ ¥Π!•¥΅Π¤¤(€€€€€€€ι±…ε½ΥΠΉ…‘‘]¥‘•Π΅™½½Ρ•Ι}™¥Ρ}΅•¥΅Π¤(€€€€€€€ι½½µ}½ΥΠ€τEQ½½±	ΥΡΡ½Έ ¤(€€€€€€€ι½½µ}½ΥΠΉΝ•Ρ%½Έ΅±¥Ή•}¥½Έ ι½½µ}½ΥΠ¤¤(€€€€€€€ι½½µ}½ΥΠΉΝ•ΡQ½½±Q¥ΐ i½½΄½ΥΠ¤(€€€€€€€ι½½µ}½ΥΠΉ±¥­•Ή½ΉΉ•Π΅±…µ‰‘„θΝ•±Ήι½½µ}ΝΡ•ΐ ΄Δ¤¤(€€€€€€€ι±…ε½ΥΠΉ…‘‘]¥‘•Π΅ι½½µ}½ΥΠ¤(€€€€€€€Ν•±Ήι½½µ}™½½Ρ•Ι}±…‰•°€τE1…‰•° ¥Π]¥‘Ρ ¤(€€€€€€€Ν•±Ήι½½µ}™½½Ρ•Ι}±…‰•°ΉΝ•Ρ5¥Ή¥µΥµ]¥‘Ρ  άΘ¤(€€€€€€€Ν•±Ήι½½µ}™½½Ρ•Ι}±…‰•°ΉΝ•Ρ±¥Ήµ•ΉΠ΅EΠΉ±¥Ήµ•ΉΡ±…Ή±¥Ή•ΉΡ•Θ¤(€€€€€€€ι±…ε½ΥΠΉ…‘‘]¥‘•Π΅Ν•±Ήι½½µ}™½½Ρ•Ι}±…‰•°¤(€€€€€€€ι½½µ}¥Έ€τEQ½½±	ΥΡΡ½Έ ¤(€€€€€€€ι½½µ}¥ΈΉΝ•Ρ%½Έ΅±¥Ή•}¥½Έ ι½½µ}¥Έ¤¤(€€€€€€€ι½½µ}¥ΈΉΝ•ΡQ½½±Q¥ΐ i½½΄¥Έ¤(€€€€€€€ι½½µ}¥ΈΉ±¥­•Ή½ΉΉ•Π΅±…µ‰‘„θΝ•±Ήι½½µ}ΝΡ•ΐ Δ¤¤(€€€€€€€ι±…ε½ΥΠΉ…‘‘]¥‘•Π΅ι½½µ}¥Έ¤(€€€€€€€±…ε½ΥΠΉ…‘‘]¥‘•Π΅Ν•±Ήι½½µ}™½½Ρ•Θ¤(€€€€€€€Ν•±Ήι½½µ}™½½Ρ•ΘΉ΅¥‘” ¤((€€€€€€€Ν•±ΉΝΑ±¥ΡΡ•ΘΉ…‘‘]¥‘•Π΅Ι¥΅Π¤(€€€€€€€Ν•±ΉΝΑ±¥ΡΡ•ΘΉΝ•ΡM¥ι•Μ΅lΘδΐ°€δδΑt¤(€€€€€€€Ν•±ΉΝΑ±¥ΡΡ•ΘΉΝΑ±¥ΡΡ•Ι5½Ω•Ή½ΉΉ•Π΅±…µ‰‘„€©|θΝ•±ΉΙ•Ν¥ι•}Ρ¥µ•ΘΉΝΡ…ΙΠ ΔΤΐ¤¤(€€€€€€€Ν•±ΉΝ•Ρ•ΉΡΙ…±]¥‘•Π΅Ν•±ΉΝΑ±¥ΡΡ•Θ¤(€€€€€€€Ν•±ΉΝΡ…ΡΥΝ	…Θ ¤ΉΝ΅½έ5•ΝΝ…” =Α•Έ„‰½½¬ƒ
-άƒ2a<¤(€€€€€€€Ν•±ΉΝεΉ}ι½½µ}½ΉΡΙ½±Μ ¤((€€€‘•…ΑΑ±ε}ΝΡε±”΅Ν•±¤θ(€€€€€€€¥Ν•±Ή‘…Ι¬θ(€€€€€€€€€€€‰°Α…Ή•°°¥Ή¬°µΥΡ•°‰½Ι‘•Θ°…ΉΩ…Μ°Α…”°…•ΉΠ°…•ΉΡ}Ν½™Π°΅½Ω•Θ€τ€ (€€€€€€€€€€€€€€€€ΔδΕΘΠ°€ΘΘΘΰΜΔ°€”έ”ε•°€„Ι…‘‰°€ΜΰΠΔΤΐ°€ΔΔΔΨΕ°€ααΨ°€Υ•„ΜΰΔ°€ΘδΠΠΜά°€Ι„ΜΔΝ(€€€€€€€€€€€€¤(€€€€€€€€€€€Ν•±•Ρ•‘}¥Ή¬€τ€ΡέΤ(€€€€€€€€€€€µ•ΉΥ}‰€τ€ΔΠΕ„ΘΜ(€€€€€€€•±Ν”θ(€€€€€€€€€€€‰°Α…Ή•°°¥Ή¬°µΥΡ•°‰½Ι‘•Θ°…ΉΩ…Μ°Α…”°…•ΉΠ°…•ΉΡ}Ν½™Π°΅½Ω•Θ€τ€ (€€€€€€€€€€€€€€€€αΩΔ°€™™™™™°€ΘΠΜΜΙ°€έΰΜέ”°€‘”Ιΰ°€”Ρ”έ”Θ°€™™™™™°€Ιέ„Τδ°€‘™••”Π°€ΙΩΔ(€€€€€€€€€€€€¤(€€€€€€€€€€€Ν•±•Ρ•‘}¥Ή¬€τ€ΘΠΜΜΙ(€€€€€€€€€€€µ•ΉΥ}‰€τ€™™™™™(€€€€€€€Ν•±ΉΝ•ΡMΡε±•M΅••Π΅(€€€€€€€E5…¥Ή]¥Ή‘½ά±E]¥‘•Πνμ‰…­Ι½ΥΉιν‰τμ½±½Θιν¥Ή­τμ™½ΉΠµ™…µ¥±δθ‰!•±Ω•Ρ¥„9•Υ”°‰Ι¥…°μ™½ΉΠµΝ¥ι”θΔΝΑΰμυτ(€€€€€€€EQ½½±	…Θνμ‰½Ι‘•Θθΐμ‰½Ι‘•Θµ‰½ΡΡ½΄θΕΑΰΝ½±¥ν‰½Ι‘•ΙτμΑ…‘‘¥ΉθαΑΰ€ΔΑΑΰμΝΑ…¥ΉθΩΑΰμυτ(€€€€€€€EQ½½±	…ΘθιΝ•Α…Ι…Ρ½Θνμέ¥‘Ρ θΕΑΰμµ…Ι¥ΈθΩΑΰ€αΑΰμ‰…­Ι½ΥΉιν‰½Ι‘•Ιτμυτ(€€€€€€€EQ½½±	ΥΡΡ½Ένμ‰½Ι‘•ΘθΕΑΰΝ½±¥ν‰½Ι‘•Ιτμ‰½Ι‘•ΘµΙ…‘¥ΥΜθΔΑΑΰμΑ…‘‘¥ΉθΥΑΰμ‰…­Ι½ΥΉινΑ…Ή•±τμµ¥Έµέ¥‘Ρ θΘΩΑΰμµ¥Έµ΅•¥΅ΠθΘΩΑΰμυτ(€€€€€€€EQ½½±	…ΘEQ½½±	ΥΡΡ½Ένμµ…ΰµέ¥‘Ρ θΜΙΑΰμµ…ΰµ΅•¥΅ΠθΜΙΑΰμυτ(€€€€€€€EQ½½±	ΥΡΡ½Έθιµ•ΉΤµ¥Ή‘¥…Ρ½Θνμ¥µ…”ιΉ½Ή”μέ¥‘Ρ θΑΑΰμ΅•¥΅ΠθΑΑΰμυτ(€€€€€€€EQ½½±	ΥΡΡ½Έι΅½Ω•Θ±EAΥΝ΅	ΥΡΡ½Έι΅½Ω•Θνμ‰½Ι‘•Θµ½±½Θιν…•ΉΡτμ‰…­Ι½ΥΉιν΅½Ω•Ιτμυτ(€€€€€€€EAΥΝ΅	ΥΡΡ½Ένμ‰½Ι‘•ΘθΕΑΰΝ½±¥ν‰½Ι‘•Ιτμ‰½Ι‘•ΘµΙ…‘¥ΥΜθΔΙΑΰμΑ…‘‘¥ΉθαΑΰ€ΔΙΑΰμ‰…­Ι½ΥΉινΑ…Ή•±τμυτ(€€€€€€€E1¥Ή•‘¥Π±EMΑ¥Ή	½ΰνμΑ…‘‘¥ΉθέΑΰ€ΔΑΑΰμ‰½Ι‘•ΘθΕΑΰΝ½±¥ν‰½Ι‘•Ιτμ‰½Ι‘•ΘµΙ…‘¥ΥΜθΔΙΑΰμ‰…­Ι½ΥΉινΑ…Ή•±τμΝ•±•Ρ¥½Έµ‰…­Ι½ΥΉµ½±½Θιν…•ΉΡτμυτ(€€€€€€€EMΑ¥Ή	½ΰΑ…•MΑ¥Ένμµ¥Έµέ¥‘Ρ θΨΙΑΰμυτ(€€€€€€€E1¥ΝΡ]¥‘•Π±EQΙ••]¥‘•Πνμ‰½Ι‘•Θθΐμ‰…­Ι½ΥΉιΡΙ…ΉΝΑ…Ι•ΉΠμ½ΥΡ±¥Ή”θΐμυτ(€€€€€€€E1¥ΝΡ]¥‘•Πθι¥Ρ•΄νμΑ…‘‘¥Ήθΐμµ…Ι¥Έθΐ€ΐ€αΑΰ€ΐμ‰½Ι‘•ΘθΕΑΰΝ½±¥ΡΙ…ΉΝΑ…Ι•ΉΠμ‰½Ι‘•ΘµΙ…‘¥ΥΜθΔΩΑΰμυτ(€€€€€€€E1¥ΝΡ]¥‘•Πθι¥Ρ•΄ιΝ•±•Ρ•νμ‰…­Ι½ΥΉιΡΙ…ΉΝΑ…Ι•ΉΠμ½±½ΘινΝ•±•Ρ•‘}¥Ή­τμ‰½Ι‘•ΘθΕΑΰΝ½±¥ΡΙ…ΉΝΑ…Ι•ΉΠμυτ(€€€€€€€EQΙ••]¥‘•Πθι¥Ρ•΄ι΅½Ω•Θνμ‰…­Ι½ΥΉιν΅½Ω•Ιτμ‰½Ι‘•ΘµΙ…‘¥ΥΜθΔΑΑΰμυτ(€€€€€€€EQΙ••]¥‘•Πθι¥Ρ•΄ιΝ•±•Ρ•νμ‰…­Ι½ΥΉιν…•ΉΡ}Ν½™Ρτμ½±½ΘινΝ•±•Ρ•‘}¥Ή­τμ‰½Ι‘•ΘµΙ…‘¥ΥΜθΔΙΑΰμυτ(€€€€€€€EQ…‰]¥‘•ΠθιΑ…Ή”νμ‰½Ι‘•Θθΐμυτ(€€€€€€€EQ…‰	…ΘθιΡ…νμΑ…‘‘¥ΉθαΑΰ€αΑΰ€εΑΰμµ…Ι¥ΈµΙ¥΅ΠθΔΑΑΰμ‰½Ι‘•Θθΐμ‰½Ι‘•Θµ‰½ΡΡ½΄θΙΑΰΝ½±¥ΡΙ…ΉΝΑ…Ι•ΉΠμ‰½Ι‘•ΘµΙ…‘¥ΥΜθΐμ½±½ΘινµΥΡ•‘τμ‰…­Ι½ΥΉιΡΙ…ΉΝΑ…Ι•ΉΠμµ¥Έµέ¥‘Ρ θΐμυτ(€€€€€€€EQ…‰	…ΘθιΡ…ι΅½Ω•Θνμ‰…­Ι½ΥΉιΡΙ…ΉΝΑ…Ι•ΉΠμ½±½Θιν¥Ή­τμυτ(€€€€€€€EQ…‰	…ΘθιΡ…ιΝ•±•Ρ•νμ‰…­Ι½ΥΉιΡΙ…ΉΝΑ…Ι•ΉΠμ½±½Θιν…•ΉΡτμ‰½Ι‘•Θθΐμ‰½Ι‘•Θµ‰½ΡΡ½΄θΙΑΰΝ½±¥ν…•ΉΡτμ™½ΉΠµέ•¥΅ΠθΨΐΐμυτ(€€€€€€€EMΙ½±±Ι•„Α…•Ι•„±E]¥‘•ΠΑ…•Ν½ΉΡ…¥Ή•Θνμ‰…­Ι½ΥΉιν…ΉΩ…Ντμ‰½Ι‘•Θθΐμυτ(€€€€€€€E1…‰•°‰½½­A…”νμ‰…­Ι½ΥΉινΑ…•τμ½±½Θθε…„Με”μ‰½Ι‘•ΘθΕΑΰΝ½±¥€™Υΐμυτ(€€€€€€€E1…‰•°‰Ι…Ήνμ™½ΉΠµΝ¥ι”θΘΝΑΰμ™½ΉΠµέ•¥΅Πθάΐΐμ±•ΡΡ•ΘµΝΑ…¥ΉθΡΑΰμυτ(€€€€€€€E1…‰•°µΥΡ•νμ½±½ΘινµΥΡ•‘τμ™½ΉΠµΝ¥ι”θΔΕΑΰμυτ(€€€€€€€E1…‰•°•ε•‰Ι½άνμ½±½Θιν…•ΉΡτμ™½ΉΠµΝ¥ι”θΔΕΑΰμ™½ΉΠµέ•¥΅ΠθΨΐΐμ±•ΡΡ•ΘµΝΑ…¥ΉθΙΑΰμυτ(€€€€€€€E1…‰•°΅•…‘±¥Ή”νμ™½ΉΠµΝ¥ι”θΜΡΑΰμ™½ΉΠµέ•¥΅ΠθΨΐΐμΑ…‘‘¥ΉθΔαΑΰ€ΐ€αΑΰμυτ(€€€€€€€E1…‰•°‘•ΝΙ¥ΑΡ¥½Ένμ½±½ΘινµΥΡ•‘τμ™½ΉΠµΝ¥ι”θΔΥΑΰμΑ…‘‘¥ΉθΡΑΰμυτ(€€€€€€€EAΥΝ΅	ΥΡΡ½ΈΑΙ¥µ…Ιδνμ‰…­Ι½ΥΉιν…•ΉΡτμ½±½Θιέ΅¥Ρ”μ‰½Ι‘•ΘθΐμΑ…‘‘¥ΉθΔΙΑΰ€ΘΩΑΰμ™½ΉΠµέ•¥΅ΠθΨΐΐμυτ(€€€€€€€E]¥‘•Πι½½µ½½Ρ•Θνμ‰½Ι‘•ΘµΡ½ΐθΕΑΰΝ½±¥ν‰½Ι‘•Ιτμ‰…­Ι½ΥΉιν‰τμυτ(€€€€€€€E]¥‘•ΠΑΙ¥ΉΡ…ΉΩ…Μνμ‰…­Ι½ΥΉθ‘™”Ι‘μυτ(€€€€€€€E]¥‘•ΠΑΙ¥ΉΡM•ΡΡ¥ΉΜνμ‰…­Ι½ΥΉινΑ…Ή•±τμ‰½Ι‘•ΘµΙ¥΅ΠθΕΑΰΝ½±¥ν‰½Ι‘•Ιτμυτ(€€€€€€€E1…‰•°ΑΙ¥ΉΡQ¥Ρ±”νμ™½ΉΠµΝ¥ι”θΘαΑΰμ™½ΉΠµέ•¥΅ΠθΨΐΐμΑ…‘‘¥Ήµ‰½ΡΡ½΄θΔΙΑΰμυτ(€€€€€€€E1…‰•°ΑΙ¥ΉΡA…”νμ‰…­Ι½ΥΉθ™™™™™μ½±½Θθάάάμ‰½Ι‘•ΘθΕΑΰΝ½±¥€ε•„μυτ(€€€€€€€EMΙ½±±	…ΘιΩ•ΙΡ¥…°νμ‰…­Ι½ΥΉιΡΙ…ΉΝΑ…Ι•ΉΠμέ¥‘Ρ θΔΙΑΰμµ…Ι¥ΈθαΑΰ€ΙΑΰ€αΑΰ€ΙΑΰμυτ(€€€€€€€EMΙ½±±	…Θθι΅…Ή‘±”ιΩ•ΙΡ¥…°νμ‰…­Ι½ΥΉιν‰½Ι‘•Ιτμµ¥Έµ΅•¥΅ΠθΠΑΑΰμ‰½Ι‘•ΘµΙ…‘¥ΥΜθΩΑΰμυτ(€€€€€€€EMΙ½±±	…Θθι΅…Ή‘±”ιΩ•ΙΡ¥…°ι΅½Ω•Θνμ‰…­Ι½ΥΉιν…•ΉΡτμυτ(€€€€€€€EMΙ½±±	…Θθι…‘µ±¥Ή”ιΩ•ΙΡ¥…°±EMΙ½±±	…ΘθιΝΥµ±¥Ή”ιΩ•ΙΡ¥…°±EMΙ½±±	…Θθι…‘µΑ…”ιΩ•ΙΡ¥…°±EMΙ½±±	…ΘθιΝΥµΑ…”ιΩ•ΙΡ¥…°νμ‰…­Ι½ΥΉιΉ½Ή”μ΅•¥΅Πθΐμυτ(€€€€€€€EMΙ½±±	…Θι΅½Ι¥ι½ΉΡ…°νμ‰…­Ι½ΥΉιΡΙ…ΉΝΑ…Ι•ΉΠμ΅•¥΅ΠθΔΙΑΰμµ…Ι¥ΈθΙΑΰ€αΑΰ€ΙΑΰ€αΑΰμυτ(€€€€€€€EMΙ½±±	…Θθι΅…Ή‘±”ι΅½Ι¥ι½ΉΡ…°νμ‰…­Ι½ΥΉιν‰½Ι‘•Ιτμµ¥Έµέ¥‘Ρ θΠΑΑΰμ‰½Ι‘•ΘµΙ…‘¥ΥΜθΩΑΰμυτ(€€€€€€€EMΙ½±±	…Θθι΅…Ή‘±”ι΅½Ι¥ι½ΉΡ…°ι΅½Ω•Θνμ‰…­Ι½ΥΉιν…•ΉΡτμυτ(€€€€€€€EMΙ½±±	…Θθι…‘µ±¥Ή”ι΅½Ι¥ι½ΉΡ…°±EMΙ½±±	…ΘθιΝΥµ±¥Ή”ι΅½Ι¥ι½ΉΡ…°±EMΙ½±±	…Θθι…‘µΑ…”ι΅½Ι¥ι½ΉΡ…°±EMΙ½±±	…ΘθιΝΥµΑ…”ι΅½Ι¥ι½ΉΡ…°νμ‰…­Ι½ΥΉιΉ½Ή”μέ¥‘Ρ θΐμυτ(€€€€€€€EMΡ…ΡΥΝ	…Θνμ‰½Ι‘•ΘµΡ½ΐθΕΑΰΝ½±¥ν‰½Ι‘•Ιτμ½±½ΘινµΥΡ•‘τμΑ…‘‘¥ΉθΝΑΰμυτ(€€€€€€€E5•ΉΤνμ‰…­Ι½ΥΉινµ•ΉΥ}‰τμ‰½Ι‘•ΘθΕΑΰΝ½±¥ν‰½Ι‘•ΙτμΑ…‘‘¥ΉθΩΑΰ€ΐμυτ(€€€€€€€E5•ΉΤθι¥Ρ•΄νμΑ…‘‘¥ΉθέΑΰ€ΘαΑΰ€έΑΰ€ΔΡΑΰμ‰…­Ι½ΥΉιΡΙ…ΉΝΑ…Ι•ΉΠμυτ(€€€€€€€E5•ΉΤθι¥Ρ•΄ιΝ•±•Ρ•νμ‰…­Ι½ΥΉιν…•ΉΡτμ½±½Θιέ΅¥Ρ”μυτ(€€€€€€€€¤(€€€€€€€Ν•±ΉΙ•™Ι•Ν΅}±¥‰Ι…Ιδ ¤(€€€€€€€Ν•±ΉΝεΉ}ι½½µ}½ΉΡΙ½±Μ ¤(
+        self.books.itemDoubleClicked.connect(lambda item: self.open_path(item.data(Qt.ItemDataRole.UserRole)))
+        self.books.itemSelectionChanged.connect(self.update_book_row_styles)
+        self.books.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.books.customContextMenuRequested.connect(self.book_menu)
+        lib_layout.addWidget(self.books)
+        add = QPushButton(line_icon('open'), ' Add books')
+        add.setToolTip('Add one or more books to the library')
+        add.clicked.connect(self.choose_open)
+        lib_layout.addWidget(add)
+        self.tabs.addTab(lib, 'Books')
+
+        self.toc = QTreeWidget()
+        self.toc.setHeaderHidden(True)
+        self.toc.itemClicked.connect(lambda item, col: self.go(item.data(0, Qt.ItemDataRole.UserRole)))
+        self.tabs.addTab(self.toc, 'TOC')
+        self.marks = QListWidget()
+        self.marks.itemClicked.connect(lambda item: self.go(item.data(Qt.ItemDataRole.UserRole)))
+        self.tabs.addTab(self.marks, 'Marks')
+        side.addWidget(self.tabs)
+        self.splitter.addWidget(self.sidebar)
+
+        right = QWidget()
+        layout = QVBoxLayout(right)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+
+        self.search_bar = QWidget()
+        search_layout = QHBoxLayout(self.search_bar)
+        search_layout.setContentsMargins(12, 8, 12, 8)
+        self.search = QLineEdit()
+        self.search.setPlaceholderText('Find text in this book Β· Enter finds the next matching page')
+        self.search.returnPressed.connect(self.find)
+        search_layout.addWidget(self.search)
+        find_button = QToolButton()
+        find_button.setIcon(line_icon('search'))
+        find_button.setToolTip('Find next')
+        find_button.clicked.connect(self.find)
+        search_layout.addWidget(find_button)
+        hide_button = QToolButton()
+        hide_button.setIcon(line_icon('close'))
+        hide_button.setToolTip('Close search')
+        hide_button.clicked.connect(self.hide_search)
+        search_layout.addWidget(hide_button)
+        self.search_bar.hide()
+        layout.addWidget(self.search_bar)
+        self.action('Find in Book', self.focus_search, QKeySequence.StandardKey.Find)
+
+        self.stack = QStackedWidget()
+        welcome = QWidget()
+        welcome_layout = QVBoxLayout(welcome)
+        welcome_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        badge = QLabel('ONE LIBRARY Β· MANY FORMATS')
+        badge.setObjectName('eyebrow')
+        badge.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        welcome_layout.addWidget(badge)
+        headline = QLabel('Just open a book.')
+        headline.setObjectName('headline')
+        headline.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        welcome_layout.addWidget(headline)
+        description = QLabel('PDF, DjVu, EPUB, FB2, MOBI, XPS, CBZ and images.\nRead locally with continuous scrolling.')
+        description.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        description.setObjectName('description')
+        welcome_layout.addWidget(description)
+        welcome_layout.addSpacing(22)
+        open_button = QPushButton(line_icon('open'), ' Open book')
+        open_button.setObjectName('primary')
+        open_button.setToolTip('Open a local book or document')
+        open_button.clicked.connect(self.choose_open)
+        welcome_layout.addWidget(open_button, alignment=Qt.AlignmentFlag.AlignCenter)
+        welcome_layout.addSpacing(16)
+        foot = QLabel('Reading position is saved automatically Β· Files stay on your Mac')
+        foot.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        foot.setObjectName('muted')
+        welcome_layout.addWidget(foot)
+        self.stack.addWidget(welcome)
+
+        self.scroll = QScrollArea()
+        self.scroll.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setObjectName('pageArea')
+        self.pages_container = QWidget()
+        self.pages_container.setObjectName('pagesContainer')
+        self.pages_layout = QVBoxLayout(self.pages_container)
+        self.pages_layout.setContentsMargins(24, 24, 24, 24)
+        self.pages_layout.setSpacing(18)
+        self.pages_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.scroll.setWidget(self.pages_container)
+        self.scroll.verticalScrollBar().valueChanged.connect(self.on_scroll)
+        layout.addWidget(self.stack, 1)
+        self.stack.addWidget(self.scroll)
+
+        self.zoom_footer = QWidget()
+        self.zoom_footer.setObjectName('zoomFooter')
+        zlayout = QHBoxLayout(self.zoom_footer)
+        zlayout.setContentsMargins(10, 5, 12, 5)
+        zlayout.addStretch(1)
+        footer_fit_width = QToolButton()
+        footer_fit_width.setIcon(line_icon('fit_width'))
+        footer_fit_width.setToolTip('Fit page width')
+        footer_fit_width.clicked.connect(lambda: self.set_zoom('Fit Width'))
+        zlayout.addWidget(footer_fit_width)
+        footer_fit_height = QToolButton()
+        footer_fit_height.setIcon(line_icon('fit_page'))
+        footer_fit_height.setToolTip('Fit page height')
+        footer_fit_height.clicked.connect(lambda: self.set_zoom('Fit Height'))
+        zlayout.addWidget(footer_fit_height)
+        zoom_out = QToolButton()
+        zoom_out.setIcon(line_icon('zoom_out'))
+        zoom_out.setToolTip('Zoom out')
+        zoom_out.clicked.connect(lambda: self.zoom_step(-1))
+        zlayout.addWidget(zoom_out)
+        self.zoom_footer_label = QLabel('Fit Width')
+        self.zoom_footer_label.setMinimumWidth(72)
+        self.zoom_footer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        zlayout.addWidget(self.zoom_footer_label)
+        zoom_in = QToolButton()
+        zoom_in.setIcon(line_icon('zoom_in'))
+        zoom_in.setToolTip('Zoom in')
+        zoom_in.clicked.connect(lambda: self.zoom_step(1))
+        zlayout.addWidget(zoom_in)
+        layout.addWidget(self.zoom_footer)
+        self.zoom_footer.hide()
+
+        self.splitter.addWidget(right)
+        self.splitter.setSizes([290, 990])
+        self.splitter.splitterMoved.connect(lambda *_: self.resize_timer.start(150))
+        self.setCentralWidget(self.splitter)
+        self.statusBar().showMessage('Open a book Β· βO')
+        self.sync_zoom_controls()
+
+    def apply_style(self):
+        if self.dark:
+            bg, panel, ink, muted, border, canvas, page, accent, accent_soft, hover = (
+                '#191d24', '#222831', '#e7e9ef', '#a2adbd', '#384150', '#11161b', '#f8f8f6', '#5ea381', '#294437', '#2a313b'
+            )
+            selected_ink = '#f4f7f5'
+            menu_bg = '#141a23'
+        else:
+            bg, panel, ink, muted, border, canvas, page, accent, accent_soft, hover = (
+                '#f8f6f1', '#ffffff', '#24332d', '#7b837e', '#dce2d8', '#e4e7e2', '#ffffff', '#2f7a59', '#dfeee4', '#f2f6f1'
+            )
+            selected_ink = '#24332d'
+            menu_bg = '#ffffff'
+        self.setStyleSheet(f'''
+        QMainWindow,QWidget {{ background:{bg}; color:{ink}; font-family:"Helvetica Neue","Arial"; font-size:13px; }}
+        QToolBar {{ border:0; border-bottom:1px solid {border}; padding:8px 10px; spacing:6px; }}
+        QToolBar::separator {{ width:1px; margin:6px 8px; background:{border}; }}
+        QToolButton {{ border:1px solid {border}; border-radius:10px; padding:5px; background:{panel}; min-width:26px; min-height:26px; }}
+        QToolBar QToolButton {{ max-width:32px; max-height:32px; }}
+        QToolButton:hover,QPushButton:hover {{ border-color:{accent}; background:{hover}; }}
+        QPushButton {{ border:1px solid {border}; border-radius:12px; padding:8px 12px; background:{panel}; }}
+        QLineEdit,QSpinBox {{ padding:7px 10px; border:1px solid {border}; border-radius:12px; background:{panel}; selection-background-color:{accent}; }}
+        QSpinBox#pageSpin {{ min-width:62px; }}
+        QListWidget,QTreeWidget {{ border:0; background:transparent; outline:0; }}
+        QListWidget::item {{ padding:0; margin:0 0 8px 0; border:1px solid transparent; border-radius:16px; }}
+        QListWidget::item:selected {{ background:transparent; color:{selected_ink}; border:1px solid transparent; }}
+        QTreeWidget::item:hover {{ background:{hover}; border-radius:10px; }}
+        QTreeWidget::item:selected {{ background:{accent_soft}; color:{selected_ink}; border-radius:12px; }}
+        QTabWidget::pane {{ border:0; }}
+        QTabBar::tab {{ padding:7px 12px; margin-right:6px; border:1px solid transparent; border-radius:18px; color:{muted}; background:transparent; min-width:0; }}
+        QTabBar::tab:hover {{ background:{hover}; color:{ink}; }}
+        QTabBar::tab:selected {{ background:{accent_soft}; color:{ink}; border:1px solid {accent}; font-weight:600; }}
+        QScrollArea#pageArea,QWidget#pagesContainer {{ background:{canvas}; border:0; }}
+        QLabel#bookPage {{ background:{page}; color:#9aa39e; border:1px solid #cfd5d0; }}
+        QLabel#brand {{ font-size:23px; font-weight:700; letter-spacing:4px; }}
+        QLabel#muted {{ color:{muted}; font-size:11px; }}
+        QLabel#eyebrow {{ color:{accent}; font-size:11px; font-weight:600; letter-spacing:2px; }}
+        QLabel#headline {{ font-size:34px; font-weight:600; padding:18px 0 8px; }}
+        QLabel#description {{ color:{muted}; font-size:15px; padding:4px; }}
+        QPushButton#primary {{ background:{accent}; color:white; border:0; padding:12px 26px; font-weight:600; }}
+        QWidget#zoomFooter {{ border-top:1px solid {border}; background:{bg}; }}
+        QWidget#printCanvas {{ background:#dfe2df; }}
+        QWidget#printSettings {{ background:{panel}; border-right:1px solid {border}; }}
+        QLabel#printTitle {{ font-size:28px; font-weight:600; padding-bottom:12px; }}
+        QLabel#printPage {{ background:#ffffff; color:#777; border:1px solid #c9ceca; }}
+        QScrollBar:vertical {{ background:transparent; width:12px; margin:8px 2px 8px 2px; }}
+        QScrollBar::handle:vertical {{ background:{border}; min-height:40px; border-radius:6px; }}
+        QScrollBar::handle:vertical:hover {{ background:{accent}; }}
+        QScrollBar::add-line:vertical,QScrollBar::sub-line:vertical,QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical {{ background:none; height:0; }}
+        QScrollBar:horizontal {{ background:transparent; height:12px; margin:2px 8px 2px 8px; }}
+        QScrollBar::handle:horizontal {{ background:{border}; min-width:40px; border-radius:6px; }}
+        QScrollBar::handle:horizontal:hover {{ background:{accent}; }}
+        QScrollBar::add-line:horizontal,QScrollBar::sub-line:horizontal,QScrollBar::add-page:horizontal,QScrollBar::sub-page:horizontal {{ background:none; width:0; }}
+        QStatusBar {{ border-top:1px solid {border}; color:{muted}; padding:3px; }}
+        QMenu {{ background:{menu_bg}; border:1px solid {border}; padding:6px 0; }}
+        QMenu::item {{ padding:7px 28px 7px 14px; background:transparent; }}
+        QMenu::item:selected {{ background:{accent}; color:white; }}
+        ''')
+        self.refresh_library()
+        self.sync_zoom_controls()

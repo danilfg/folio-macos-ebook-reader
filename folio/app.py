@@ -1,19 +1,14 @@
 from __future__ import annotations
 
-from PySide6.QtCore import QSize
-
-from . import ui_shared as _ui_shared
 from .ui_shared import *
+from .v034 import WindowV034Mixin
 from .window_ui import WindowUiMixin
 from .window_library import WindowLibraryMixin
 from .window_reader import WindowReaderMixin
 from .window_commands import WindowCommandsMixin
 
-# BookListItemWidget is defined in ui_shared and resolves Qt helpers from that module.
-_ui_shared.QSize = QSize
 
-
-class Window(WindowUiMixin, WindowLibraryMixin, WindowReaderMixin, WindowCommandsMixin, QMainWindow):
+class Window(WindowV034Mixin, WindowUiMixin, WindowLibraryMixin, WindowReaderMixin, WindowCommandsMixin, QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Folio — ebook & document reader')

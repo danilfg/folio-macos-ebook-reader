@@ -1,15 +1,20 @@
 # Changelog
 
-## 0.3.3 — 2026-09-17
+## 0.3.4 — 2026-09-17
 
-- Renamed `TOC` to `Contents` and `Marks` to `Bookmarks` for clearer sidebar navigation.
-- Replaced rectangular selected-tab styling with a cleaner text + underline treatment.
-- Selected books are now clearly highlighted in the library list.
-- Added a compact × button to each book row to remove it from the library without opening the context menu.
-- Books now open with a single click instead of a double-click.
-- Removed the dropdown arrow indicator from the zoom button; the magnifier opens the zoom menu directly.
-- `Fit Height` now snaps back to the current page after resizing so the reader does not remain between two pages.
-- Bumped the application version to 0.3.3.
+- Restored the reader UI from the last verified v0.3.2 code after the failed v0.3.3 build.
+- Renamed the `TOC` tab to `Contents`.
+- Reworked sidebar tab selection into a softer rounded pill without a rectangular outline.
+- Made the currently opened book visibly highlighted in the library.
+- Added a compact `×` button to each library row to remove the entry without deleting the original file.
+- Library books now open with a single click.
+- Removed the visible dropdown indicator from the zoom magnifier button.
+- `Fit Height` now anchors the current page to the viewport instead of leaving the reader between two pages.
+- Kept v0.3.4 UX changes in a small compatibility layer on top of the verified reader core.
+
+## 0.3.3 — not released
+
+- This build was not published because CI detected a corrupted non-printable character in `window_ui.py`.
 
 ## 0.3.2 — 2026-09-17
 
@@ -25,9 +30,6 @@
 - Replaced the zoom combobox with compact toolbar controls: fit-width, fit-height, and a zoom menu button with a clean popup menu.
 - Added keyboard page flipping with the arrow keys (Right / Down = next page, Left / Up = previous page).
 - Improved zoom responsiveness: existing page images stay visible, rapid zoom changes are debounced, and expensive rerenders only start after the user pauses.
-- Bumped the application version to 0.3.1.
-
-All notable changes to Folio are documented here.
 
 ## 0.3.0 — 2026-09-17
 
@@ -41,7 +43,6 @@ All notable changes to Folio are documented here.
 - Sidebar tabs use a modern segmented/pill appearance with hover and selected states.
 - Toolbar Export button now starts PDF export directly instead of opening a one-item popup menu.
 - Zoom preserves the currently rendered page image immediately and refreshes higher-quality pixels in the background, avoiding white-page flashes.
-- Version bumped to 0.3.0.
 
 ## 0.2.0 — 2026-09-17
 
@@ -56,8 +57,7 @@ All notable changes to Folio are documented here.
 
 ### Changed
 - Application UI is English-only.
-- DjVu → PDF export now uses DjVuLibre native multi-page PDF output in a single pass at 160 DPI / quality 80 instead of per-page PNG embedding.
-- Version bumped to 0.2.0.
+- DjVu → PDF export now uses DjVuLibre native multi-page PDF generation in one pass at 160 DPI / quality 80 instead of per-page PNG embedding.
 
 ### Removed
 - `Install.command` end-user installation flow. Releases are distributed as DMG files.

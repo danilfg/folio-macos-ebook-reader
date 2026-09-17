@@ -19,13 +19,12 @@ class WindowLibraryMixin:
             progress = f'Page {row["page"] + 1} / {row["total"]}' if row['total'] else 'Not opened yet'
             item = QListWidgetItem()
             item.setData(Qt.ItemDataRole.UserRole, row['path'])
-            item.setToolTip(row['path'] + '\nClick to open')
+            item.setToolTip(row['path'] + '\nDouble-click to open')
             item.setSizeHint(QSize(0, 96))
             self.books.addItem(item)
             widget = BookListItemWidget(row['title'], f'{ext}  ·  {progress}', ext, self.dark)
             preview = self.book_previews.get(row['path'])
             widget.set_preview(preview, ext)
-            widget.removeRequested.connect(lambda p=row['path']: self.remove_book(p))
             self.books.setItemWidget(item, widget)
             if row['path'] == current_path:
                 current_item = item
@@ -85,7 +84,7 @@ class WindowLibraryMixin:
                     count += 1
         progress.close()
         self.refresh_library()
-        self.statusBar().showMessage(f'Added {count} book(s). Click a book to open it.')
+        self.statusBar().showMessage(f'Added {count} book(s). Double-click a book to open it.')
 
     def clear_pages(self):
         while self.pages_layout.count():
