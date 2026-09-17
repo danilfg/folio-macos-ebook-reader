@@ -29,8 +29,10 @@ class WindowReaderMixin:
             src_w, src_h = sizes[min(i, len(sizes) - 1)]
             width = self.zoom_width_for_page(i)
             height = width * max(1.0, float(src_h)) / max(1.0, float(src_w))
-            label.reset_placeholder()
+            has_image = label.pixmap() is not None and not label.pixmap().isNull()
             label.setFixedSize(round(width), max(120, round(height)))
+            if not has_image:
+                label.reset_placeholder()
             max_w = max(max_w, round(width))
         self.pages_container.setMinimumWidth(max_w + 56)
         self.pages_layout.activate()
