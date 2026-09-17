@@ -102,6 +102,40 @@ class UiTests(unittest.TestCase):
         QTest.keyClick(self.window, Qt.Key.Key_Left)
         self.wait_for(lambda: self.window.page == 0)
 
+    def test_two_page_mode_fits_spread_width_and_navigates_by_spread(self):
+        path = Path(self.temp.name) / 'four-pages.pdf'
+        doc = fitz.open()
+        for number in range(4):
+            page = doc.new_page(width=595, height=842)
+            page.insert_text((72, 90), f'Page {number + 1}')
+        doc.save(path)
+        doc.close()
+
+        self.window.open_path(str(path))
+        self.wait_for(lambda: self.window.meta is not None and self.window.meta['count'] == 4)
+        self.window.toggle_two_page_mode(True)
+        self.app.processEvents()
+        self.assertTrue(self.window.two_page_mode)
+        self.assertIs(self.window.page_labels[0].parentWidget(), self.window.page_labels[1].parentWidget())
+        self.assertIsNot(self.window.page_labels[0].parentWidget(), self.window.page_labels[2].parentWidget())
+
+        self.window.set_zoom('Fit Width')
+        self.app.processEvents()
+        available = max(320, self.window.scroll.viewport().width() - 58)
+        pair_width = self.window.page_labels[0].width() + self.window.page_labels[1].width() + self.window.spread_gap()
+        self.assertLessEqual(pair_width, available + 2)
+
+        self.window.go(0)
+        self.window.go_next_display()
+        self.assertEqual(self.window.page, 2)
+        self.window.go_previous_display()
+        self.assertEqual(self.window.page, 0)
+
+        self.window.toggle_two_page_mode(False)
+        self.app.processEvents()
+        self.assertFalse(self.window.two_page_mode)
+        self.assertIs(self.window.page_labels[0].parentWidget(), self.window.pages_container)
+
     def test_background_export_keeps_reader_available(self):
         self.open_pdf()
         output = Path(self.temp.name) / 'background-export.pdf'
