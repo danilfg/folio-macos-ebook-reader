@@ -1,56 +1,23 @@
 from __future__ import annotations
 
 from PySide6.QtCore import QSize, Qt, Signal, QTimer
-from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import (
-    QHBoxLayout,
-    QLabel,
-    QListWidgetItem,
-    QMessageBox,
-    QToolButton,
-    QVBoxLayout,
-    QWidget,
-)
+from PySide6.QtWidgets import QListWidgetItem, QMessageBox, QToolButton
 
-from .ui_shared import line_icon
+from .ui_shared import BookListItemWidget, line_icon
 
 
-class CompactBookRow(QWidget):
+class CompactBookRow(BookListItemWidget):
     openRequested = Signal()
     removeRequested = Signal()
 
     def __init__(self, title: str, meta: str, ext: str, dark: bool = False):
-        super().__init__()
-        self.setObjectName('compactBookRow')
-        self.dark = dark
-        self.selected = False
+        super().__init__(title, meta, ext, dark)
+        self.setObjectName('bookListCard')
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.setMinimumHeight(86)
-
-        root = QHBoxLayout(self)
-        root.setContentsMargins(8, 7, 7, 7)
-        root.setSpacing(10)
-
-        self.thumb = QLabel(ext)
-        self.thumb.setObjectName('compactBookThumb')
-        self.thumb.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.thumb.setWordWrap(True)
+        self.layout().setContentsMargins(8, 7, 7, 7)
+        self.layout().setSpacing(10)
         self.thumb.setFixedSize(48, 64)
-        root.addWidget(self.thumb, 0, Qt.AlignmentFlag.AlignVCenter)
-
-        text = QVBoxLayout()
-        text.setContentsMargins(0, 2, 0, 2)
-        text.setSpacing(3)
-        self.title_label = QLabel(title)
-        self.title_label.setObjectName('compactBookTitle')
-        self.title_label.setWordWrap(True)
-        self.meta_label = QLabel(meta)
-        self.meta_label.setObjectName('compactBookMeta')
-        self.meta_label.setWordWrap(True)
-        text.addWidget(self.title_label)
-        text.addWidget(self.meta_label)
-        text.addStretch(1)
-        root.addLayout(text, 1)
 
         self.remove_button = QToolButton()
         self.remove_button.setObjectName('compactBookRemove')
@@ -60,10 +27,10 @@ class CompactBookRow(QWidget):
         self.remove_button.setToolTip('Remove from Library')
         self.remove_button.clicked.connect(self.removeRequested.emit)
         self.remove_button.setCursor(Qt.CursorShape.ArrowCursor)
-        root.addWidget(self.remove_button, 0, Qt.AlignmentFlag.AlignTop)
+        self.layout().addWidget(self.remove_button, 0, Qt.AlignmentFlag.AlignTop)
         self.apply_state()
 
-    def set_preview(self, pixmap: QPixmap | None, fallback: str):
+    def set_preview(self, pixmap, fallback: str = ''):
         if pixmap is not None and not pixmap.isNull():
             scaled = pixmap.scaled(
                 44,
@@ -74,14 +41,8 @@ class CompactBookRow(QWidget):
             self.thumb.setPixmap(scaled)
             self.thumb.setText('')
         else:
-            self.thumb.setPixmap(QPixmap())
+            self.thumb.setPixmap(type(self.thumb.pixmap())()) if self.thumb.pixmap() is not None else self.thumb.clear()
             self.thumb.setText(fallback)
-
-    def set_selected(self, selected: bool, dark: bool | None = None):
-        self.selected = selected
-        if dark is not None:
-            self.dark = dark
-        self.apply_state()
 
     def apply_state(self):
         if self.dark:
@@ -104,10 +65,10 @@ class CompactBookRow(QWidget):
         bg = selected_bg if self.selected else 'transparent'
         border = selected_border if self.selected else 'transparent'
         self.setStyleSheet(
-            f"QWidget#compactBookRow{{background:{bg};border:1px solid {border};border-radius:14px;}}"
-            f"QLabel#compactBookThumb{{background:{thumb_bg};border:1px solid {thumb_border};border-radius:9px;padding:2px;color:{meta};font-size:9px;font-weight:600;}}"
-            f"QLabel#compactBookTitle{{background:transparent;border:0;color:{title};font-size:13px;font-weight:600;}}"
-            f"QLabel#compactBookMeta{{background:transparent;border:0;color:{meta};font-size:11px;}}"
+            f"QWidget#bookListCard{{background:{bg};border:1px solid {border};border-radius:14px;}}"
+            f"QLabel#bookListThumb{{background:{thumb_bg};border:1px solid {thumb_border};border-radius:9px;padding:2px;color:{meta};font-size:9px;font-weight:600;}}"
+            f"QLabel#bookListTitle{{background:transparent;border:0;color:{title};font-size:13px;font-weight:600;}}"
+            f"QLabel#bookListMeta{{background:transparent;border:0;color:{meta};font-size:11px;}}"
             f"QToolButton#compactBookRemove{{background:transparent;border:0;border-radius:12px;padding:3px;}}"
             f"QToolButton#compactBookRemove:hover{{background:{remove_hover};border:0;}}"
         )
