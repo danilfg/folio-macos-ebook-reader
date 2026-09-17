@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.6 — 2026-09-17
+
+- Fixed EPUB 2 cover detection when a book contains both `<meta name="cover">` pointing to an image and a guide `type="cover"` pointing to an XHTML title page.
+- Real embedded cover images now take priority over cover-page XHTML wrappers.
+- Cover-page XHTML/SVG is parsed for an image when no direct embedded-cover manifest entry is available.
+- EPUB thumbnails now always fall back to rendering page 1 when no usable embedded cover can be extracted.
+- Added regression tests for the EPUB metadata-vs-guide cover case and the missing-cover fallback path.
+
 ## 0.3.5 — 2026-09-17
 
 - Added embedded cover extraction for EPUB books so the library shows the real cover instead of the first laid-out text page.
