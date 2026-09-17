@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from PySide6.QtPrintSupport import QPrintDialog, QPrinter
 from PySide6.QtTest import QTest
-from PySide6.QtWidgets import QDialog
+from PySide6.QtWidgets import QAbstractSpinBox, QDialog, QFileDialog
 import pymupdf as fitz
 from folio.app import Application, PrintPreviewDialog, Window
 from make_samples import make as make_samples
@@ -38,6 +38,10 @@ class UiTests(unittest.TestCase):
         self.app.processEvents()
 
     def tearDown(self):
+        export_engine = getattr(self.window, 'export_engine', None)
+        if export_engine:
+            export_engine.stop()
+        self.window.export_in_progress = False
         self.window.working = False
         self.window.close()
         self.app.processEvents()
@@ -81,9 +85,28 @@ class UiTests(unittest.TestCase):
         self.wait_for(lambda: bool(self.window.page_labels[1].matches))
 
         self.window.toggle_theme()
+        before = self.window.page_labels[1].pixmap()
+        self.assertIsNotNone(before)
         self.window.zoom.setCurrentText('Fit Page')
-        self.wait_for(lambda: self.window.page_labels[1].pixmap() is not None)
+        # Zoom keeps the previous render visible immediately, then replaces it with a sharper render.
+        self.assertIsNotNone(self.window.page_labels[1].pixmap())
+        self.wait_for(lambda: self.window.rendered_signature.get(1) is not None)
         self.assertLessEqual(self.window.page_labels[1].height(), self.window.scroll.viewport().height())
+        self.wait_for(lambda: self.window.library_preview_image.pixmap() is not None and not self.window.library_preview_image.pixmap().isNull())
+        self.assertEqual(self.window.page_spin.buttonSymbols(), QAbstractSpinBox.ButtonSymbols.NoButtons)
+
+    def test_background_export_keeps_reader_available(self):
+        self.open_pdf()
+        output = Path(self.temp.name) / 'background-export.pdf'
+        with patch.object(QFileDialog, 'getSaveFileName', return_value=(str(output), 'PDF document (*.pdf)')):
+            self.window.export_pdf()
+            self.assertTrue(self.window.export_in_progress)
+            self.assertFalse(self.window.working)
+            self.assertIsNot(self.window.export_engine, self.window.engine)
+            self.window.go(1)
+            self.assertEqual(self.window.page, 1)
+            self.wait_for(lambda: not self.window.export_in_progress)
+        self.assertTrue(output.exists())
 
     def test_selected_page_prints_to_real_pdf_after_preview(self):
         self.open_pdf()
