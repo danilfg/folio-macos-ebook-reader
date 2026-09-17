@@ -4,6 +4,8 @@ from .ui_shared import *
 class WindowLibraryMixin:
     def refresh_library(self, *_):
         self.books.clear()
+        current_path = self.meta['path'] if self.meta else None
+        current_item = None
         for row in self.library.all(self.filter.text()):
             ext = 'FB2.ZIP' if row['path'].lower().endswith('.fb2.zip') else Path(row['path']).suffix[1:].upper()
             progress = f"  ·  {row['page'] + 1} / {row['total']}" if row['total'] else ''
@@ -11,6 +13,10 @@ class WindowLibraryMixin:
             item.setData(Qt.ItemDataRole.UserRole, row['path'])
             item.setToolTip(row['path'] + '\nDouble-click to open')
             self.books.addItem(item)
+            if row['path'] == current_path:
+                current_item = item
+        if current_item:
+            self.books.setCurrentItem(current_item)
 
     def choose_open(self):
         paths, _ = QFileDialog.getOpenFileNames(self, 'Open books', str(Path.home()), BOOK_FILTER)
@@ -25,6 +31,36 @@ class WindowLibraryMixin:
             self.open_path(valid[0])
         elif paths:
             self.error('None of the selected files use a supported book format.')
+
+    def update_sidebar_preview(self):
+        if not getattr(self, 'library_preview_card', None):
+            return
+        if not self.meta:
+            self.library_preview_title.setText('')
+            self.library_preview_meta.setText('')
+            self.library_preview_image.setText('Open a book to see a preview')
+            self.library_preview_image.setPixmap(QPixmap())
+            return
+        suffix = 'FB2.ZIP' if self.meta['path'].lower().endswith('.fb2.zip') else Path(self.meta['path']).suffix[1:].upper()
+        self.library_preview_title.setText(self.meta['title'])
+        self.library_preview_meta.setText(f"{suffix} · {self.meta['count']} pages")
+        self.library_preview_image.setPixmap(QPixmap())
+        self.library_preview_image.setText('Loading preview…')
+        generation = self.generation
+
+        def done(response, generation=generation):
+            if generation != self.generation:
+                return
+            if 'error' in response:
+                self.library_preview_image.setText('Preview unavailable')
+                return
+            image = QImage.fromData(base64.b64decode(response['result']['image']))
+            pix = QPixmap.fromImage(image)
+            pix = pix.scaled(220, 260, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+            self.library_preview_image.setText('')
+            self.library_preview_image.setPixmap(pix)
+
+        self.engine.request('render', done, page=0, width=260)
 
     def import_folder(self):
         folder = QFileDialog.getExistingDirectory(self, 'Add a folder with books')
@@ -91,6 +127,7 @@ class WindowLibraryMixin:
                 return
 
             self.meta = response['result']
+            self.current_password = password
             self.last_query = ''
             self.search.clear()
             self.library.add(self.meta['path'], self.meta['title'], self.meta['count'])
@@ -119,6 +156,7 @@ class WindowLibraryMixin:
                 item.setFlags(Qt.ItemFlag.NoItemFlags)
 
             self.refresh_marks()
+            self.update_sidebar_preview()
             self.build_page_placeholders()
             self.stack.setCurrentIndex(1)
             self.zoom_footer.show()
