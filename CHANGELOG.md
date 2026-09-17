@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.9 — 2026-09-17
+
+- Rebuilt Print Preview in Folio's visual style with the preview canvas on the left and print settings on the right.
+- `All pages` now creates a preview for the full document instead of showing only the current page.
+- Added `Current page` and live `Custom range` support such as `1-5, 8, 11-13`.
+- Added `Pages per sheet` options for 1, 2, 4 and 6 pages with live N-up sheet previews.
+- Added `Fit to paper`, `Actual size` and custom percentage scale modes.
+- Large documents use lazy print-preview rendering: only nearby sheets are rendered and off-screen preview pixmaps are released.
+- Actual printing now respects the selected N-up layout, so 2/4/6-page preview layouts are also sent to the printer that way.
+- Kept printer selection, paper size, copies and PDF destination in the native macOS print dialog after the Folio preview.
+- Added regression tests for custom page ranges and 1/2/4/6-page print grids.
+
 ## 0.3.8 — 2026-09-17
 
 - Rebuilt the macOS disk image as a branded installer-style DMG using `dmgbuild`.
