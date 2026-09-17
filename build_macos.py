@@ -1,0 +1,211 @@
+"""Build a standalone Apple Silicon Folio.app and optional DMG release artifact."""
+from __future__ import annotations
+
+import argparse
+import os
+from pathlib import Path
+import platform
+import plistlib
+import shutil
+import subprocess
+import sys
+import tempfile
+
+from folio import __version__ as VERSION
+
+BUNDLE_ID = 'tech.itroadmaps.folio'
+DJVU_TOOLS = ('ddjvu', 'djvused', 'djvutxt', 'djvudump')
+
+
+def run(*args, **kwargs):
+    print('+', ' '.join(map(str, args)))
+    return subprocess.run(list(map(str, args)), check=True, **kwargs)
+
+
+def make_icon(folder):
+    from PySide6.QtCore import QRectF, Qt
+    from PySide6.QtGui import QImage, QPainter, QColor, QPen, QPainterPath
+
+    iconset = folder / 'Folio.iconset'
+    iconset.mkdir()
+    for size in (16, 32, 128, 256, 512):
+        for scale in (1, 2):
+            n = size * scale
+            image = QImage(n, n, QImage.Format.Format_ARGB32)
+            image.fill(Qt.GlobalColor.transparent)
+            p = QPainter(image)
+            p.setRenderHint(QPainter.RenderHint.Antialiasing)
+            p.scale(n / 1024, n / 1024)
+            p.setPen(Qt.PenStyle.NoPen)
+            p.setBrush(QColor('#2d694f'))
+            p.drawRoundedRect(QRectF(32, 32, 960, 960), 210, 210)
+            p.setBrush(QColor('#fff7df'))
+            left = QPainterPath()
+            left.moveTo(220, 290); left.cubicTo(330, 255, 420, 280, 496, 337)
+            left.lineTo(496, 763); left.cubicTo(410, 706, 320, 680, 220, 713); left.closeSubpath()
+            p.drawPath(left)
+            right = QPainterPath()
+            right.moveTo(528, 337); right.cubicTo(615, 280, 705, 255, 804, 290)
+            right.lineTo(804, 713); right.cubicTo(697, 680, 610, 706, 528, 763); right.closeSubpath()
+            p.drawPath(right)
+            p.setPen(QPen(QColor('#b6c7ae'), 13, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap))
+            for y in (420, 485, 550):
+                p.drawLine(285, y, 425, y + 24)
+                p.drawLine(590, y + 24, 738, y)
+            p.end()
+            suffix = '@2x' if scale == 2 else ''
+            image.save(str(iconset / f'icon_{size}x{size}{suffix}.png'))
+    icon = folder / 'Folio.icns'
+    run('/usr/bin/iconutil', '-c', 'icns', iconset, '-o', icon)
+    return icon
+
+
+def locate_djvu_tool(name):
+    candidates = [Path('/opt/homebrew/bin') / name, Path('/usr/local/bin') / name]
+    which = shutil.which(name)
+    if which:
+        candidates.insert(0, Path(which))
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate.resolve()
+    raise SystemExit(f'Missing {name}. Install DjVuLibre first: brew install djvulibre')
+
+
+def pyinstaller_command(root, temp, icon):
+    cmd = [
+        sys.executable, '-m', 'PyInstaller', '--noconfirm', '--clean', '--windowed',
+        '--name', 'Folio', '--target-architecture', 'arm64',
+        '--osx-bundle-identifier', BUNDLE_ID, '--icon', str(icon),
+        '--distpath', str(temp / 'dist'), '--workpath', str(temp / 'work'),
+        '--specpath', str(temp), '--paths', str(root),
+        '--add-data', f'{root / "README.md"}:documentation',
+        '--add-data', f'{root / "LICENSE"}:documentation',
+        '--add-data', f'{root / "THIRD_PARTY.md"}:documentation',
+    ]
+    # PyInstaller treats these as real binaries and performs dependency analysis,
+    # so Homebrew dylibs used by DjVuLibre are copied into the app bundle as well.
+    for tool in DJVU_TOOLS:
+        cmd += ['--add-binary', f'{locate_djvu_tool(tool)}:djvu/bin']
+    cmd.append(str(root / 'main.py'))
+    return cmd
+
+
+def configure_info_plist(app):
+    info = app / 'Contents/Info.plist'
+    with info.open('rb') as f:
+        data = plistlib.load(f)
+    extensions = [
+        'pdf', 'djvu', 'djv', 'epub', 'fb2', 'mobi', 'prc', 'xps', 'oxps', 'cbz',
+        'txt', 'png', 'jpg', 'jpeg', 'tif', 'tiff', 'bmp', 'gif', 'svg'
+    ]
+    data.update(
+        CFBundleDisplayName='Folio',
+        CFBundleName='Folio',
+        CFBundleShortVersionString=VERSION,
+        CFBundleVersion='2',
+        NSHighResolutionCapable=True,
+        LSMinimumSystemVersion='14.0',
+        CFBundleDocumentTypes=[dict(
+            CFBundleTypeName='Ebook or document',
+            CFBundleTypeRole='Viewer',
+            LSHandlerRank='Alternate',
+            CFBundleTypeExtensions=extensions,
+        )],
+    )
+    with info.open('wb') as f:
+        plistlib.dump(data, f)
+
+
+def verify_standalone(app):
+    """Fail the release build if any Mach-O still points into a Homebrew prefix."""
+    bad = []
+    for path in app.rglob('*'):
+        if not path.is_file() or path.is_symlink():
+            continue
+        probe = subprocess.run(['/usr/bin/file', str(path)], capture_output=True, text=True)
+        if 'Mach-O' not in probe.stdout:
+            continue
+        deps = subprocess.run(['/usr/bin/otool', '-L', str(path)], capture_output=True, text=True, check=False)
+        for line in deps.stdout.splitlines()[1:]:
+            dep = line.strip().split(' ', 1)[0]
+            if dep.startswith('/opt/homebrew/') or dep.startswith('/usr/local/'):
+                bad.append((path.relative_to(app), dep))
+    if bad:
+        lines = '\n'.join(f'  {binary}: {dep}' for binary, dep in bad[:40])
+        raise SystemExit('The app is not standalone; unresolved Homebrew dependencies remain:\n' + lines)
+
+
+def sign_app(app):
+    identity = os.environ.get('FOLIO_CODESIGN_IDENTITY', '').strip()
+    if identity:
+        run('/usr/bin/codesign', '--force', '--deep', '--options', 'runtime', '--timestamp', '--sign', identity, app)
+    else:
+        # Ad-hoc signing keeps local builds runnable, but does not replace Developer ID + notarization.
+        run('/usr/bin/codesign', '--force', '--deep', '--sign', '-', app)
+    run('/usr/bin/codesign', '--verify', '--deep', '--strict', '--verbose=2', app)
+
+
+def create_dmg(app, output_dir):
+    stage = output_dir / '.dmg-stage'
+    if stage.exists():
+        shutil.rmtree(stage)
+    stage.mkdir(parents=True)
+    shutil.copytree(app, stage / 'Folio.app', symlinks=True)
+    (stage / 'Applications').symlink_to('/Applications')
+    dmg = output_dir / 'Folio-macOS-arm64.dmg'
+    dmg.unlink(missing_ok=True)
+    run('/usr/bin/hdiutil', 'create', '-volname', 'Folio', '-srcfolder', stage,
+        '-ov', '-format', 'UDZO', dmg)
+    shutil.rmtree(stage)
+    return dmg
+
+
+def notarize_if_configured(dmg):
+    apple_id = os.environ.get('APPLE_ID')
+    team_id = os.environ.get('APPLE_TEAM_ID')
+    password = os.environ.get('APPLE_APP_PASSWORD')
+    if not all((apple_id, team_id, password)):
+        return False
+    run('/usr/bin/xcrun', 'notarytool', 'submit', dmg, '--apple-id', apple_id,
+        '--team-id', team_id, '--password', password, '--wait')
+    run('/usr/bin/xcrun', 'stapler', 'staple', dmg)
+    return True
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--output', default='dist', help='Output directory (default: dist)')
+    parser.add_argument('--dmg', action='store_true', help='Also create a drag-to-Applications DMG')
+    args = parser.parse_args()
+
+    if sys.platform != 'darwin' or platform.machine() != 'arm64':
+        raise SystemExit('Build Folio on an Apple Silicon macOS runner without Rosetta.')
+
+    root = Path(__file__).resolve().parent
+    output_dir = (root / args.output).resolve()
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    with tempfile.TemporaryDirectory(prefix='folio-build-') as tmp:
+        temp = Path(tmp)
+        icon = make_icon(temp)
+        run(*pyinstaller_command(root, temp, icon), cwd=root)
+        app = temp / 'dist/Folio.app'
+        configure_info_plist(app)
+        verify_standalone(app)
+        sign_app(app)
+
+        target = output_dir / 'Folio.app'
+        if target.exists():
+            shutil.rmtree(target)
+        shutil.copytree(app, target, symlinks=True)
+        print('Created:', target)
+
+        if args.dmg:
+            dmg = create_dmg(target, output_dir)
+            notarized = notarize_if_configured(dmg)
+            print('Created:', dmg)
+            print('Notarized:' if notarized else 'Not notarized (Developer ID secrets were not configured):', dmg)
+
+
+if __name__ == '__main__':
+    main()

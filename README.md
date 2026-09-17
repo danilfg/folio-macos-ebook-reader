@@ -103,7 +103,7 @@ pip install -r requirements.txt
 python main.py
 ```
 
-Run tests:
+Run tests (the suite generates its small redistributable fixtures automatically):
 
 ```bash
 python -m unittest discover -s tests -v
