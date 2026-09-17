@@ -11,11 +11,12 @@ from PySide6.QtGui import QAction, QColor, QFont, QIcon, QImage, QKeySequence, Q
 from PySide6.QtPrintSupport import QPrintDialog, QPrinter
 from PySide6.QtSvg import QSvgRenderer
 from PySide6.QtWidgets import (
-    QApplication, QComboBox, QDialog, QDialogButtonBox, QFileDialog, QHBoxLayout,
-    QInputDialog, QLabel, QLineEdit, QListWidget, QListWidgetItem, QMainWindow,
-    QMenu, QMessageBox, QProgressDialog, QPushButton, QScrollArea, QSizePolicy,
-    QSpinBox, QSplitter, QStackedWidget, QTabWidget, QToolBar, QToolButton,
-    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
+    QApplication, QAbstractSpinBox, QComboBox, QDialog, QDialogButtonBox,
+    QFileDialog, QHBoxLayout, QInputDialog, QLabel, QLineEdit, QListWidget,
+    QListWidgetItem, QMainWindow, QMenu, QMessageBox, QProgressDialog,
+    QPushButton, QScrollArea, QSizePolicy, QSpinBox, QSplitter,
+    QStackedWidget, QTabWidget, QToolBar, QToolButton, QTreeWidget,
+    QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from .engine import EXTENSIONS, supported
@@ -114,6 +115,7 @@ class PageLabel(QLabel):
         self.page_index = page_index
         self.matches = []
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setScaledContents(True)
         self.setText(f'Page {page_index + 1}')
         self.setObjectName('bookPage')
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
