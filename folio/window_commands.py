@@ -56,34 +56,51 @@ class WindowCommandsMixin:
         self.engine.request('text', done, page=self.page)
 
     def export_pdf(self):
-        if not self.meta or self.working or self.opening:
+        if not self.meta or self.opening or self.working or getattr(self, 'export_in_progress', False):
             return
         default_name = Path(self.meta['path']).stem + '-export.pdf'
-        target, _ = QFileDialog.getSaveFileName(self, 'Export as PDF', str(Path.home() / default_name), 'PDF document (*.pdf)')
+        target, _ = QFileDialog.getSaveFileName(
+            self, 'Export as PDF', str(Path.home() / default_name), 'PDF document (*.pdf)'
+        )
         if not target:
             return
         if not target.lower().endswith('.pdf'):
             target += '.pdf'
-        self.working = True
-        text = 'Exporting PDF…'
-        if self.meta.get('djvu'):
-            text = 'Exporting DjVu to an optimized PDF in one pass…'
-        progress = QProgressDialog(text, None, 0, 0, self)
-        progress.setWindowTitle('Export as PDF')
-        progress.setWindowModality(Qt.WindowModality.WindowModal)
-        progress.setMinimumDuration(0)
-        progress.show()
 
-        def done(response):
-            progress.close()
-            self.working = False
+        source_path = self.meta['path']
+        source_password = getattr(self, 'current_password', '')
+        self.export_in_progress = True
+        self.export_button.setEnabled(False)
+        self.export_pdf_action.setEnabled(False)
+        message = 'Exporting PDF in the background…'
+        if self.meta.get('djvu'):
+            message = 'Exporting DjVu to an optimized PDF in the background…'
+        self.statusBar().showMessage(message + ' You can keep reading while it finishes.')
+
+        worker = EngineClient(self)
+        self.export_engine = worker
+
+        def finish(response):
+            if getattr(self, 'export_engine', None) is worker:
+                self.export_engine = None
+            worker.stop()
+            worker.deleteLater()
+            self.export_in_progress = False
+            self.export_button.setEnabled(True)
+            self.export_pdf_action.setEnabled(True)
             if 'error' in response:
                 self.error(response['error'])
-            else:
-                size_mb = Path(target).stat().st_size / (1024 * 1024) if Path(target).exists() else 0
-                self.statusBar().showMessage(f'PDF saved: {target} · {size_mb:.1f} MB')
+                return
+            size_mb = Path(target).stat().st_size / (1024 * 1024) if Path(target).exists() else 0
+            self.statusBar().showMessage(f'PDF saved: {target} · {size_mb:.1f} MB')
 
-        self.engine.request('export', done, target=target)
+        def opened(response):
+            if 'error' in response:
+                finish(response)
+                return
+            worker.request('export', finish, target=target)
+
+        worker.request('open', opened, path=source_path, password=source_password)
 
     def print_book(self):
         if not self.meta or self.working or self.opening:
@@ -184,7 +201,7 @@ class WindowCommandsMixin:
     def about(self):
         QMessageBox.about(
             self, 'About Folio',
-            'Folio 0.2.0\nOffline ebook & document reader for macOS Apple Silicon.\n\n'
+            'Folio 0.3.0\nOffline ebook & document reader for macOS Apple Silicon.\n\n'
             'PDF · DjVu · EPUB · FB2 / FB2.ZIP · MOBI / PRC\nTXT · XPS / OXPS · CBZ · images\n\n'
             'Continuous scrolling, text search, bookmarks, print preview, and PDF export.\n'
             'OCR and DRM are not supported.\n\nPySide6 / Qt, PyMuPDF, DjVuLibre.\nAGPL-3.0-or-later.'
@@ -202,6 +219,10 @@ class WindowCommandsMixin:
         self.resize_timer.start(160)
 
     def closeEvent(self, event):
+        if getattr(self, 'export_in_progress', False):
+            self.statusBar().showMessage('PDF export is still running. Wait for it to finish before closing Folio.')
+            event.ignore()
+            return
         if self.working:
             self.statusBar().showMessage('Wait for the current operation to finish. Printing can be cancelled in its progress window.')
             event.ignore()
