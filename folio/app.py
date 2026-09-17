@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from .ui_shared import *
+from .v035 import WindowV035Mixin
 from .v034 import WindowV034Mixin
 from .window_ui import WindowUiMixin
 from .window_library import WindowLibraryMixin
@@ -8,7 +9,7 @@ from .window_reader import WindowReaderMixin
 from .window_commands import WindowCommandsMixin
 
 
-class Window(WindowV034Mixin, WindowUiMixin, WindowLibraryMixin, WindowReaderMixin, WindowCommandsMixin, QMainWindow):
+class Window(WindowV035Mixin, WindowV034Mixin, WindowUiMixin, WindowLibraryMixin, WindowReaderMixin, WindowCommandsMixin, QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Folio — ebook & document reader')
