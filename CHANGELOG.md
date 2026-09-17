@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.5 — 2026-09-17
+
+- Added embedded cover extraction for EPUB books so the library shows the real cover instead of the first laid-out text page.
+- Added MOBI/PRC cover detection from embedded PalmDB image records, with a first-page fallback when no usable cover is present.
+- Added RAR/CBR comic support using macOS libarchive/bsdtar, including RAR archives that were incorrectly named with a `.cbz` extension.
+- RAR-based comics now show `CBR` in the library and use the first comic image as their thumbnail.
+- Library thumbnails now begin loading immediately in a dedicated preview worker instead of waiting until each book is opened.
+- Reduced library row height, thumbnail size, margins, and spacing so substantially more books fit in the sidebar.
+- Added `.cbr` to the file picker path handled by the v0.3.5 UI layer.
+
 ## 0.3.4 — 2026-09-17
 
 - Restored the reader UI from the last verified v0.3.2 code after the failed v0.3.3 build.
