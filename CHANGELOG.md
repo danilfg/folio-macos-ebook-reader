@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.1 — 2026-09-17
+
+- Reworked the sidebar tabs so short labels fit cleanly in narrow layouts (`Books`, `TOC`, `Marks`).
+- Replaced the oversized library preview card with compact book cards that keep a small thumbnail on the left and the title / progress on the right.
+- Replaced the zoom combobox with compact toolbar controls: fit-width, fit-height, and a zoom menu button with a clean popup menu.
+- Added keyboard page flipping with the arrow keys (Right / Down = next page, Left / Up = previous page).
+- Improved zoom responsiveness: existing page images stay visible, rapid zoom changes are debounced, and expensive rerenders only start after the user pauses.
+- Bumped the application version to 0.3.1.
+
 All notable changes to Folio are documented here.
 
 ## 0.3.0 — 2026-09-17

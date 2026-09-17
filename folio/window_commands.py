@@ -201,7 +201,7 @@ class WindowCommandsMixin:
     def about(self):
         QMessageBox.about(
             self, 'About Folio',
-            'Folio 0.3.0\nOffline ebook & document reader for macOS Apple Silicon.\n\n'
+            'Folio 0.3.1\nOffline ebook & document reader for macOS Apple Silicon.\n\n'
             'PDF · DjVu · EPUB · FB2 / FB2.ZIP · MOBI / PRC\nTXT · XPS / OXPS · CBZ · images\n\n'
             'Continuous scrolling, text search, bookmarks, print preview, and PDF export.\n'
             'OCR and DRM are not supported.\n\nPySide6 / Qt, PyMuPDF, DjVuLibre.\nAGPL-3.0-or-later.'
@@ -213,6 +213,18 @@ class WindowCommandsMixin:
 
     def dropEvent(self, event):
         self.add_paths([u.toLocalFile() for u in event.mimeData().urls() if u.isLocalFile()])
+
+    def keyPressEvent(self, event):
+        if self.meta and self.stack.currentIndex() == 1 and not isinstance(self.focusWidget(), QLineEdit):
+            if event.key() in (Qt.Key.Key_Right, Qt.Key.Key_Down):
+                self.go(self.page + 1)
+                event.accept()
+                return
+            if event.key() in (Qt.Key.Key_Left, Qt.Key.Key_Up):
+                self.go(self.page - 1)
+                event.accept()
+                return
+        super().keyPressEvent(event)
 
     def resizeEvent(self, event):
         super().resizeEvent(event)

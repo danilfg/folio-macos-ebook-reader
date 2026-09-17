@@ -2,18 +2,21 @@ from .ui_shared import *
 
 
 class WindowReaderMixin:
+    def current_zoom_text(self):
+        return getattr(self, 'zoom_value', 'Fit Width')
+
     def zoom_width_for_page(self, page_index):
         sizes = self.meta.get('page_sizes') or [[595.0, 842.0]] * self.meta['count']
         src_w, src_h = sizes[min(page_index, len(sizes) - 1)]
         src_w = max(1.0, float(src_w))
         src_h = max(1.0, float(src_h))
-        mode = self.zoom.currentText()
+        mode = self.current_zoom_text()
         viewport_w = max(320, self.scroll.viewport().width() - 58)
         viewport_h = max(320, self.scroll.viewport().height() - 40)
         if mode == 'Fit Width':
             return viewport_w
-        if mode == 'Fit Page':
-            return min(viewport_w, viewport_h * src_w / src_h)
+        if mode == 'Fit Height':
+            return max(240, viewport_h * src_w / src_h)
         return max(240, 595 * int(mode[:-1]) / 100)
 
     def refresh_page_geometry(self, *_):
@@ -21,7 +24,6 @@ class WindowReaderMixin:
             return
         self.render_generation += 1
         self.pending_pages.clear()
-        self.rendered_signature.clear()
         self.render_busy = False
         max_w = 0
         sizes = self.meta.get('page_sizes') or [[595.0, 842.0]] * self.meta['count']
@@ -36,17 +38,19 @@ class WindowReaderMixin:
             max_w = max(max_w, round(width))
         self.pages_container.setMinimumWidth(max_w + 56)
         self.pages_layout.activate()
-        self.zoom_footer_label.setText(self.zoom.currentText())
-        QTimer.singleShot(0, self.render_visible_pages)
+        self.sync_zoom_controls()
+        self.render_debounce_timer.start(350)
 
     def set_zoom(self, value):
-        idx = self.zoom.findText(value)
-        if idx >= 0:
-            self.zoom.setCurrentIndex(idx)
+        if value == getattr(self, 'zoom_value', None):
+            self.sync_zoom_controls()
+            return
+        self.zoom_value = value
+        self.refresh_page_geometry()
 
     def zoom_step(self, direction):
-        values = ['50%', '67%', '75%', '90%', '100%', '110%', '125%', '150%', '175%', '200%', '250%', '300%']
-        current = self.zoom.currentText()
+        values = self.zoom_numeric_values
+        current = self.current_zoom_text()
         if current not in values:
             current = '100%'
         index = values.index(current)
@@ -139,14 +143,14 @@ class WindowReaderMixin:
         ratio = self.devicePixelRatioF()
 
         for i, label in enumerate(self.page_labels):
-            if i not in wanted_set and min(abs(i - p) for p in wanted) > 3 and label.pixmap() is not None:
+            if i not in wanted_set and wanted and min(abs(i - p) for p in wanted) > 3 and label.pixmap() is not None:
                 label.reset_placeholder()
                 self.rendered_signature.pop(i, None)
 
         for page in wanted:
             label = self.page_labels[page]
             width = max(160, label.width())
-            signature = (width, query)
+            signature = (width, round(label.height()), query)
             if self.rendered_signature.get(page) == signature or page in self.pending_pages:
                 continue
             token = self.render_generation
@@ -164,7 +168,7 @@ class WindowReaderMixin:
                         self.error(response['error'])
                     return
                 label = self.page_labels[page]
-                if label.width() != width:
+                if abs(label.width() - width) > 2:
                     return
                 result = response['result']
                 image = QImage.fromData(base64.b64decode(result['image']))
@@ -182,7 +186,8 @@ class WindowReaderMixin:
                     self.page_label = label
                 self.update_status()
 
-            self.engine.request('render', done, page=page, width=int(width * ratio), query=query)
+            render_width = min(2400, max(320, int(width * ratio)))
+            self.engine.request('render', done, page=page, width=render_width, query=query)
         self.update_status()
 
     def update_status(self):

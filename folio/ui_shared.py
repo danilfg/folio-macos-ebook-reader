@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 import sys
 
-from PySide6.QtCore import QByteArray, QEvent, QPoint, QRectF, Qt, QProcess, QTimer, Signal
+from PySide6.QtCore import QByteArray, QEvent, QPoint, QRectF, QSize, Qt, QProcess, QTimer, Signal
 from PySide6.QtGui import QAction, QColor, QFont, QIcon, QImage, QKeySequence, QPainter, QPixmap
 from PySide6.QtPrintSupport import QPrintDialog, QPrinter
 from PySide6.QtSvg import QSvgRenderer
@@ -36,6 +36,8 @@ ICON_PATHS = {
     'zoom_out': '<circle cx="10" cy="10" r="6"/><path d="M14.5 14.5L21 21M7 10h6"/>',
     'search': '<circle cx="10" cy="10" r="6"/><path d="M14.5 14.5L21 21"/>',
     'close': '<path d="M6 6l12 12M18 6L6 18"/>',
+    'fit_width': '<rect x="4" y="5" width="16" height="14" rx="2"/><path d="M8 12h8"/><path d="M6 12l2-2M6 12l2 2M18 12l-2-2M18 12l-2 2"/>',
+    'fit_page': '<rect x="5" y="4" width="14" height="16" rx="2"/><path d="M12 8v8"/><path d="M12 6l-2 2M12 6l2 2M12 18l-2-2M12 18l2-2"/>',
 }
 
 
@@ -133,6 +135,85 @@ class PageLabel(QLabel):
             painter.setBrush(QColor(255, 198, 55, 95))
             for x, y, w, h in self.matches:
                 painter.drawRect(QRectF(x * self.width(), y * self.height(), w * self.width(), h * self.height()))
+
+
+class BookListItemWidget(QWidget):
+    def __init__(self, title: str, meta: str, ext: str, dark: bool = False):
+        super().__init__()
+        self.setObjectName('bookListCard')
+        self.dark = dark
+        self.selected = False
+
+        root = QHBoxLayout(self)
+        root.setContentsMargins(12, 10, 12, 10)
+        root.setSpacing(12)
+
+        self.thumb = QLabel(ext)
+        self.thumb.setObjectName('bookListThumb')
+        self.thumb.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.thumb.setWordWrap(True)
+        self.thumb.setFixedSize(54, 72)
+        root.addWidget(self.thumb, 0, Qt.AlignmentFlag.AlignTop)
+
+        text_box = QVBoxLayout()
+        text_box.setContentsMargins(0, 2, 0, 2)
+        text_box.setSpacing(4)
+
+        self.title = QLabel(title)
+        self.title.setObjectName('bookListTitle')
+        self.title.setWordWrap(True)
+        text_box.addWidget(self.title)
+
+        self.meta = QLabel(meta)
+        self.meta.setObjectName('bookListMeta')
+        self.meta.setWordWrap(True)
+        text_box.addWidget(self.meta)
+        text_box.addStretch(1)
+
+        root.addLayout(text_box, 1)
+        self.apply_state()
+
+    def set_preview(self, pixmap: QPixmap | None, fallback: str = ''):
+        if pixmap is not None and not pixmap.isNull():
+            scaled = pixmap.scaled(50, 68, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+            self.thumb.setText('')
+            self.thumb.setPixmap(scaled)
+        else:
+            self.thumb.setPixmap(QPixmap())
+            self.thumb.setText(fallback)
+
+    def set_selected(self, selected: bool, dark: bool | None = None):
+        self.selected = selected
+        if dark is not None:
+            self.dark = dark
+        self.apply_state()
+
+    def apply_state(self):
+        if self.dark:
+            panel = '#20262f'
+            thumb_bg = '#11161d'
+            border = '#34404f'
+            hover = '#243a30'
+            accent = '#38b27d'
+            title = '#eef2f7'
+            meta = '#a5b2c4'
+        else:
+            panel = '#ffffff'
+            thumb_bg = '#eef2ed'
+            border = '#d6ddd4'
+            hover = '#dff0e6'
+            accent = '#11875d'
+            title = '#24332d'
+            meta = '#6f7872'
+
+        bg = hover if self.selected else panel
+        line = accent if self.selected else border
+        self.setStyleSheet(
+            f"QWidget#bookListCard{{background:{bg};border:1px solid {line};border-radius:16px;}}"
+            f"QLabel#bookListThumb{{background:{thumb_bg};border:1px solid {border};border-radius:10px;padding:2px;color:{meta};font-size:10px;font-weight:600;}}"
+            f"QLabel#bookListTitle{{color:{title};font-size:14px;font-weight:600;border:0;background:transparent;}}"
+            f"QLabel#bookListMeta{{color:{meta};font-size:11px;border:0;background:transparent;}}"
+        )
 
 
 class PrintPreviewDialog(QDialog):
@@ -280,4 +361,3 @@ class PrintPreviewDialog(QDialog):
             self.preview.setPixmap(pix)
 
         self.window.engine.request('render', done, page=page, width=width)
-

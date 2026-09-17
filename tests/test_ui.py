@@ -12,11 +12,13 @@ if sys.platform != 'darwin' and not os.environ.get('DISPLAY'):
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+from PySide6.QtCore import Qt
 from PySide6.QtPrintSupport import QPrintDialog, QPrinter
 from PySide6.QtTest import QTest
 from PySide6.QtWidgets import QAbstractSpinBox, QDialog, QFileDialog
 import pymupdf as fitz
 from folio.app import Application, PrintPreviewDialog, Window
+from folio.ui_shared import BookListItemWidget
 from make_samples import make as make_samples
 
 
@@ -38,10 +40,6 @@ class UiTests(unittest.TestCase):
         self.app.processEvents()
 
     def tearDown(self):
-        export_engine = getattr(self.window, 'export_engine', None)
-        if export_engine:
-            export_engine.stop()
-        self.window.export_in_progress = False
         self.window.working = False
         self.window.close()
         self.app.processEvents()
@@ -87,13 +85,22 @@ class UiTests(unittest.TestCase):
         self.window.toggle_theme()
         before = self.window.page_labels[1].pixmap()
         self.assertIsNotNone(before)
-        self.window.zoom.setCurrentText('Fit Page')
-        # Zoom keeps the previous render visible immediately, then replaces it with a sharper render.
+        self.window.set_zoom('Fit Height')
         self.assertIsNotNone(self.window.page_labels[1].pixmap())
         self.wait_for(lambda: self.window.rendered_signature.get(1) is not None)
         self.assertLessEqual(self.window.page_labels[1].height(), self.window.scroll.viewport().height())
-        self.wait_for(lambda: self.window.library_preview_image.pixmap() is not None and not self.window.library_preview_image.pixmap().isNull())
+        widget = self.window.books.itemWidget(self.window.books.item(0))
+        self.assertIsInstance(widget, BookListItemWidget)
         self.assertEqual(self.window.page_spin.buttonSymbols(), QAbstractSpinBox.ButtonSymbols.NoButtons)
+
+    def test_keyboard_arrows_flip_pages(self):
+        self.open_pdf()
+        self.window.setFocus()
+        self.window.go(0)
+        QTest.keyClick(self.window, Qt.Key.Key_Right)
+        self.wait_for(lambda: self.window.page == 1)
+        QTest.keyClick(self.window, Qt.Key.Key_Left)
+        self.wait_for(lambda: self.window.page == 0)
 
     def test_background_export_keeps_reader_available(self):
         self.open_pdf()

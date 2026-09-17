@@ -16,12 +16,30 @@ class WindowUiMixin:
         bar.addAction(act)
         return act
 
+    def _build_zoom_menu(self):
+        menu = QMenu(self)
+        self.zoom_actions = {}
+        for value in ['Fit Width', 'Fit Height', *self.zoom_numeric_values]:
+            action = menu.addAction(value, lambda checked=False, v=value: self.set_zoom(v))
+            action.setCheckable(True)
+            self.zoom_actions[value] = action
+        self.zoom_menu_button.setMenu(menu)
+
+    def sync_zoom_controls(self):
+        current = getattr(self, 'zoom_value', 'Fit Width')
+        if hasattr(self, 'zoom_actions'):
+            for value, action in self.zoom_actions.items():
+                action.setChecked(value == current)
+        label = current
+        if hasattr(self, 'zoom_footer_label'):
+            self.zoom_footer_label.setText(label)
+
     def build_ui(self):
         bar = self.addToolBar('Reader')
         bar.setMovable(False)
         bar.setObjectName('MainToolbar')
         bar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
-        bar.setIconSize(QPixmap(22, 22).size())
+        bar.setIconSize(QPixmap(20, 20).size())
 
         file_menu = self.menuBar().addMenu('File')
         open_action = self.action('Open…', self.choose_open, QKeySequence.StandardKey.Open, 'open', 'Open book…')
@@ -45,7 +63,7 @@ class WindowUiMixin:
         self.page_spin = QSpinBox()
         self.page_spin.setObjectName('pageSpin')
         self.page_spin.setRange(1, 1)
-        self.page_spin.setFixedWidth(70)
+        self.page_spin.setFixedWidth(68)
         self.page_spin.setKeyboardTracking(False)
         self.page_spin.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.page_spin.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
@@ -55,18 +73,30 @@ class WindowUiMixin:
         self.page_total = QLabel(' / —  ')
         bar.addWidget(self.page_total)
         self.next_action = self.add_toolbar_action(bar, 'Next page', lambda: self.go(self.page + 1), 'Right', 'next', 'Next page')
+        self.action('Previous page with Up Arrow', lambda: self.go(self.page - 1), 'Up')
+        self.action('Next page with Down Arrow', lambda: self.go(self.page + 1), 'Down')
 
         bar.addSeparator()
-        self.zoom = QComboBox()
-        self.zoom.setObjectName('zoomCombo')
-        self.zoom.addItems(['Fit Width', 'Fit Page', '50%', '67%', '75%', '90%', '100%', '110%', '125%', '150%', '175%', '200%', '250%', '300%'])
-        self.zoom.setCurrentText('Fit Width')
-        self.zoom.setFixedWidth(118)
-        self.zoom.setToolTip('Zoom')
-        self.zoom.currentIndexChanged.connect(self.refresh_page_geometry)
-        bar.addWidget(self.zoom)
+        self.fit_width_button = QToolButton()
+        self.fit_width_button.setIcon(line_icon('fit_width'))
+        self.fit_width_button.setToolTip('Fit page width')
+        self.fit_width_button.clicked.connect(lambda: self.set_zoom('Fit Width'))
+        bar.addWidget(self.fit_width_button)
 
-        self.add_toolbar_action(bar, 'Bookmark', self.bookmark, 'Ctrl+D', 'bookmark', 'Add or remove bookmark')
+        self.fit_height_button = QToolButton()
+        self.fit_height_button.setIcon(line_icon('fit_page'))
+        self.fit_height_button.setToolTip('Fit page height')
+        self.fit_height_button.clicked.connect(lambda: self.set_zoom('Fit Height'))
+        bar.addWidget(self.fit_height_button)
+
+        self.zoom_menu_button = QToolButton()
+        self.zoom_menu_button.setIcon(line_icon('search'))
+        self.zoom_menu_button.setToolTip('Zoom')
+        self.zoom_menu_button.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
+        bar.addWidget(self.zoom_menu_button)
+        self._build_zoom_menu()
+
+        bookmark_action = self.add_toolbar_action(bar, 'Bookmark', self.bookmark, 'Ctrl+D', 'bookmark', 'Add or remove bookmark')
         bar.addSeparator()
 
         spacer = QWidget()
@@ -80,7 +110,7 @@ class WindowUiMixin:
         self.export_button.setAutoRaise(False)
         bar.addWidget(self.export_button)
 
-        self.add_toolbar_action(bar, 'Toggle theme', self.toggle_theme, 'Ctrl+Shift+L', 'theme', 'Toggle light / dark theme')
+        theme_action = self.add_toolbar_action(bar, 'Toggle theme', self.toggle_theme, 'Ctrl+Shift+L', 'theme', 'Toggle light / dark theme')
 
         view_menu = self.menuBar().addMenu('View')
         view_menu.addAction(self.action('Sidebar', lambda: self.sidebar.setVisible(not self.sidebar.isVisible()), 'Ctrl+B'))
@@ -91,7 +121,7 @@ class WindowUiMixin:
         view_menu.addAction(self.action('Zoom Out', lambda: self.zoom_step(-1), 'Ctrl+-'))
         view_menu.addAction(self.action('Actual Size', lambda: self.set_zoom('100%'), 'Ctrl+0'))
         view_menu.addAction(self.action('Fit Width', lambda: self.set_zoom('Fit Width')))
-        view_menu.addAction(self.action('Fit Page', lambda: self.set_zoom('Fit Page')))
+        view_menu.addAction(self.action('Fit Height', lambda: self.set_zoom('Fit Height')))
 
         help_menu = self.menuBar().addMenu('Help')
         help_menu.addAction(self.action('About Folio', self.about))
@@ -110,34 +140,20 @@ class WindowUiMixin:
 
         self.tabs = QTabWidget()
         self.tabs.setObjectName('sidebarTabs')
+        self.tabs.tabBar().setExpanding(False)
+        self.tabs.tabBar().setUsesScrollButtons(False)
         lib = QWidget()
         lib_layout = QVBoxLayout(lib)
         lib_layout.setContentsMargins(0, 10, 0, 0)
-        self.library_preview_card = QWidget()
-        self.library_preview_card.setObjectName('bookPreviewCard')
-        preview_layout = QVBoxLayout(self.library_preview_card)
-        preview_layout.setContentsMargins(10, 10, 10, 10)
-        preview_layout.setSpacing(8)
-        self.library_preview_image = QLabel('Open a book to see a preview')
-        self.library_preview_image.setObjectName('bookPreviewImage')
-        self.library_preview_image.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.library_preview_image.setMinimumHeight(220)
-        self.library_preview_title = QLabel('')
-        self.library_preview_title.setObjectName('bookPreviewTitle')
-        self.library_preview_title.setWordWrap(True)
-        self.library_preview_meta = QLabel('')
-        self.library_preview_meta.setObjectName('bookPreviewMeta')
-        preview_layout.addWidget(self.library_preview_image)
-        preview_layout.addWidget(self.library_preview_title)
-        preview_layout.addWidget(self.library_preview_meta)
-        lib_layout.addWidget(self.library_preview_card)
         self.filter = QLineEdit()
         self.filter.setPlaceholderText('Search your library')
         self.filter.textChanged.connect(self.refresh_library)
         lib_layout.addWidget(self.filter)
         self.books = QListWidget()
         self.books.setWordWrap(True)
+        self.books.setSpacing(8)
         self.books.itemDoubleClicked.connect(lambda item: self.open_path(item.data(Qt.ItemDataRole.UserRole)))
+        self.books.itemSelectionChanged.connect(self.update_book_row_styles)
         self.books.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.books.customContextMenuRequested.connect(self.book_menu)
         lib_layout.addWidget(self.books)
@@ -150,10 +166,10 @@ class WindowUiMixin:
         self.toc = QTreeWidget()
         self.toc.setHeaderHidden(True)
         self.toc.itemClicked.connect(lambda item, col: self.go(item.data(0, Qt.ItemDataRole.UserRole)))
-        self.tabs.addTab(self.toc, 'Contents')
+        self.tabs.addTab(self.toc, 'TOC')
         self.marks = QListWidget()
         self.marks.itemClicked.connect(lambda item: self.go(item.data(Qt.ItemDataRole.UserRole)))
-        self.tabs.addTab(self.marks, 'Bookmarks')
+        self.tabs.addTab(self.marks, 'Marks')
         side.addWidget(self.tabs)
         self.splitter.addWidget(self.sidebar)
 
@@ -224,14 +240,24 @@ class WindowUiMixin:
         self.pages_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
         self.scroll.setWidget(self.pages_container)
         self.scroll.verticalScrollBar().valueChanged.connect(self.on_scroll)
-        self.stack.addWidget(self.scroll)
         layout.addWidget(self.stack, 1)
+        self.stack.addWidget(self.scroll)
 
         self.zoom_footer = QWidget()
         self.zoom_footer.setObjectName('zoomFooter')
         zlayout = QHBoxLayout(self.zoom_footer)
         zlayout.setContentsMargins(10, 5, 12, 5)
         zlayout.addStretch(1)
+        footer_fit_width = QToolButton()
+        footer_fit_width.setIcon(line_icon('fit_width'))
+        footer_fit_width.setToolTip('Fit page width')
+        footer_fit_width.clicked.connect(lambda: self.set_zoom('Fit Width'))
+        zlayout.addWidget(footer_fit_width)
+        footer_fit_height = QToolButton()
+        footer_fit_height.setIcon(line_icon('fit_page'))
+        footer_fit_height.setToolTip('Fit page height')
+        footer_fit_height.clicked.connect(lambda: self.set_zoom('Fit Height'))
+        zlayout.addWidget(footer_fit_height)
         zoom_out = QToolButton()
         zoom_out.setIcon(line_icon('zoom_out'))
         zoom_out.setToolTip('Zoom out')
@@ -254,6 +280,7 @@ class WindowUiMixin:
         self.splitter.splitterMoved.connect(lambda *_: self.resize_timer.start(150))
         self.setCentralWidget(self.splitter)
         self.statusBar().showMessage('Open a book · ⌘O')
+        self.sync_zoom_controls()
 
     def apply_style(self):
         if self.dark:
@@ -261,34 +288,30 @@ class WindowUiMixin:
                 '#191d24', '#222831', '#e7e9ef', '#a2adbd', '#384150', '#11161b', '#f8f8f6', '#5ea381', '#294437', '#2a313b'
             )
             selected_ink = '#f4f7f5'
-            preview_bg = '#1c2128'
-            preview_image_bg = '#13181d'
+            menu_bg = '#141a23'
         else:
             bg, panel, ink, muted, border, canvas, page, accent, accent_soft, hover = (
                 '#f8f6f1', '#ffffff', '#24332d', '#7b837e', '#dce2d8', '#e4e7e2', '#ffffff', '#2f7a59', '#dfeee4', '#f2f6f1'
             )
             selected_ink = '#24332d'
-            preview_bg = '#ffffff'
-            preview_image_bg = '#eef2ed'
+            menu_bg = '#ffffff'
         self.setStyleSheet(f'''
         QMainWindow,QWidget {{ background:{bg}; color:{ink}; font-family:"Helvetica Neue","Arial"; font-size:13px; }}
         QToolBar {{ border:0; border-bottom:1px solid {border}; padding:8px 10px; spacing:6px; }}
         QToolBar::separator {{ width:1px; margin:6px 8px; background:{border}; }}
-        QToolButton {{ border:1px solid {border}; border-radius:10px; padding:6px; background:{panel}; min-width:28px; min-height:28px; }}
-        QToolBar QToolButton {{ max-width:34px; max-height:34px; }}
+        QToolButton {{ border:1px solid {border}; border-radius:10px; padding:5px; background:{panel}; min-width:26px; min-height:26px; }}
+        QToolBar QToolButton {{ max-width:32px; max-height:32px; }}
         QToolButton:hover,QPushButton:hover {{ border-color:{accent}; background:{hover}; }}
         QPushButton {{ border:1px solid {border}; border-radius:12px; padding:8px 12px; background:{panel}; }}
-        QLineEdit,QSpinBox,QComboBox {{ padding:7px 10px; border:1px solid {border}; border-radius:12px; background:{panel}; selection-background-color:{accent}; }}
-        QSpinBox#pageSpin {{ min-width:64px; }}
-        QComboBox#zoomCombo {{ min-width:112px; padding-right:28px; }}
-        QComboBox::drop-down {{ border:0; width:22px; background:transparent; margin-right:6px; }}
-        QComboBox::down-arrow {{ width:10px; height:10px; }}
+        QLineEdit,QSpinBox {{ padding:7px 10px; border:1px solid {border}; border-radius:12px; background:{panel}; selection-background-color:{accent}; }}
+        QSpinBox#pageSpin {{ min-width:62px; }}
         QListWidget,QTreeWidget {{ border:0; background:transparent; outline:0; }}
-        QListWidget::item {{ padding:10px 10px; margin:0 0 6px 0; border:1px solid transparent; border-radius:12px; }}
-        QListWidget::item:hover,QTreeWidget::item:hover {{ background:{hover}; border-radius:10px; }}
-        QListWidget::item:selected,QTreeWidget::item:selected {{ background:{accent_soft}; color:{selected_ink}; border:1px solid {accent}; border-radius:12px; }}
+        QListWidget::item {{ padding:0; margin:0 0 8px 0; border:1px solid transparent; border-radius:16px; }}
+        QListWidget::item:selected {{ background:transparent; color:{selected_ink}; border:1px solid transparent; }}
+        QTreeWidget::item:hover {{ background:{hover}; border-radius:10px; }}
+        QTreeWidget::item:selected {{ background:{accent_soft}; color:{selected_ink}; border-radius:12px; }}
         QTabWidget::pane {{ border:0; }}
-        QTabBar::tab {{ padding:8px 16px; margin-right:8px; border:1px solid transparent; border-radius:12px; color:{muted}; background:transparent; }}
+        QTabBar::tab {{ padding:7px 12px; margin-right:6px; border:1px solid transparent; border-radius:18px; color:{muted}; background:transparent; min-width:0; }}
         QTabBar::tab:hover {{ background:{hover}; color:{ink}; }}
         QTabBar::tab:selected {{ background:{accent_soft}; color:{ink}; border:1px solid {accent}; font-weight:600; }}
         QScrollArea#pageArea,QWidget#pagesContainer {{ background:{canvas}; border:0; }}
@@ -304,17 +327,18 @@ class WindowUiMixin:
         QWidget#printSettings {{ background:{panel}; border-right:1px solid {border}; }}
         QLabel#printTitle {{ font-size:28px; font-weight:600; padding-bottom:12px; }}
         QLabel#printPage {{ background:#ffffff; color:#777; border:1px solid #c9ceca; }}
-        QWidget#bookPreviewCard {{ background:{preview_bg}; border:1px solid {border}; border-radius:16px; }}
-        QLabel#bookPreviewImage {{ background:{preview_image_bg}; border:1px solid {border}; border-radius:12px; color:{muted}; padding:8px; }}
-        QLabel#bookPreviewTitle {{ font-size:14px; font-weight:600; }}
-        QLabel#bookPreviewMeta {{ color:{muted}; font-size:11px; }}
-        QScrollBar:vertical {{ background:transparent; width:14px; margin:10px 2px 10px 2px; }}
-        QScrollBar::handle:vertical {{ background:{border}; min-height:40px; border-radius:7px; }}
+        QScrollBar:vertical {{ background:transparent; width:12px; margin:8px 2px 8px 2px; }}
+        QScrollBar::handle:vertical {{ background:{border}; min-height:40px; border-radius:6px; }}
         QScrollBar::handle:vertical:hover {{ background:{accent}; }}
         QScrollBar::add-line:vertical,QScrollBar::sub-line:vertical,QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical {{ background:none; height:0; }}
-        QScrollBar:horizontal {{ background:transparent; height:14px; margin:2px 10px 2px 10px; }}
-        QScrollBar::handle:horizontal {{ background:{border}; min-width:40px; border-radius:7px; }}
+        QScrollBar:horizontal {{ background:transparent; height:12px; margin:2px 8px 2px 8px; }}
+        QScrollBar::handle:horizontal {{ background:{border}; min-width:40px; border-radius:6px; }}
         QScrollBar::handle:horizontal:hover {{ background:{accent}; }}
         QScrollBar::add-line:horizontal,QScrollBar::sub-line:horizontal,QScrollBar::add-page:horizontal,QScrollBar::sub-page:horizontal {{ background:none; width:0; }}
         QStatusBar {{ border-top:1px solid {border}; color:{muted}; padding:3px; }}
+        QMenu {{ background:{menu_bg}; border:1px solid {border}; padding:6px 0; }}
+        QMenu::item {{ padding:7px 28px 7px 14px; background:transparent; }}
+        QMenu::item:selected {{ background:{accent}; color:white; }}
         ''')
+        self.refresh_library()
+        self.sync_zoom_controls()

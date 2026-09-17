@@ -30,6 +30,12 @@ class Window(WindowUiMixin, WindowLibraryMixin, WindowReaderMixin, WindowCommand
         self.printer = self.painter = None
         self.page_labels = []
         self.page_label = None
+        self.zoom_value = 'Fit Width'
+        self.zoom_numeric_values = ['50%', '67%', '75%', '90%', '100%', '110%', '125%', '150%', '175%', '200%', '250%', '300%']
+        self.book_previews = {}
+        self.preview_queue = []
+        self.preview_active = None
+        self.preview_engine = None
 
         self.resize_timer = QTimer(self)
         self.resize_timer.setSingleShot(True)
@@ -37,6 +43,9 @@ class Window(WindowUiMixin, WindowLibraryMixin, WindowReaderMixin, WindowCommand
         self.scroll_timer = QTimer(self)
         self.scroll_timer.setSingleShot(True)
         self.scroll_timer.timeout.connect(self.render_visible_pages)
+        self.render_debounce_timer = QTimer(self)
+        self.render_debounce_timer.setSingleShot(True)
+        self.render_debounce_timer.timeout.connect(self.render_visible_pages)
 
         self.build_ui()
         self.engine = EngineClient(self)
