@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.10 — 2026-09-17
+
+- Replaced the native-looking print combo boxes with Folio-styled select controls and a cleaner popup menu/chevron.
+- An empty `Custom range` now means all pages instead of showing an error.
+- Added open-ended page ranges: `5-` prints page 5 through the end, and `-5` prints the beginning through page 5.
+- Two-page and six-page N-up layouts now use landscape/wide sheets in both preview and the default printer orientation.
+- One-page and four-page N-up layouts remain portrait.
+- Added regression tests for empty/open-ended ranges and the 1/2/4/6 orientation rules.
+
 ## 0.3.9 — 2026-09-17
 
 - Rebuilt Print Preview in Folio's visual style with the preview canvas on the left and print settings on the right.
