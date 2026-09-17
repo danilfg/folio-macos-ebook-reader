@@ -1,4 +1,4 @@
-"""Build a standalone Apple Silicon Folio.app and optional DMG release artifact."""
+"""Build a standalone Apple Silicon Folio.app and optional branded DMG release artifact."""
 from __future__ import annotations
 
 import argparse
@@ -95,7 +95,7 @@ def configure_info_plist(app):
     with info.open('rb') as f:
         data = plistlib.load(f)
     extensions = [
-        'pdf', 'djvu', 'djv', 'epub', 'fb2', 'mobi', 'prc', 'xps', 'oxps', 'cbz',
+        'pdf', 'djvu', 'djv', 'epub', 'fb2', 'mobi', 'prc', 'xps', 'oxps', 'cbz', 'cbr',
         'txt', 'png', 'jpg', 'jpeg', 'tif', 'tiff', 'bmp', 'gif', 'svg'
     ]
     data.update(
@@ -145,18 +145,46 @@ def sign_app(app):
     run('/usr/bin/codesign', '--verify', '--deep', '--strict', '--verbose=2', app)
 
 
-def create_dmg(app, output_dir):
-    stage = output_dir / '.dmg-stage'
-    if stage.exists():
-        shutil.rmtree(stage)
-    stage.mkdir(parents=True)
-    shutil.copytree(app, stage / 'Folio.app', symlinks=True)
-    (stage / 'Applications').symlink_to('/Applications')
+def create_dmg(app, output_dir, volume_icon):
+    """Create a Finder-friendly drag-to-Applications DMG with Folio branding."""
     dmg = output_dir / 'Folio-macOS-arm64.dmg'
     dmg.unlink(missing_ok=True)
-    run('/usr/bin/hdiutil', 'create', '-volname', 'Folio', '-srcfolder', stage,
-        '-ov', '-format', 'UDZO', dmg)
-    shutil.rmtree(stage)
+
+    with tempfile.TemporaryDirectory(prefix='folio-dmg-') as temp_name:
+        temp = Path(temp_name)
+        settings = temp / 'dmg_settings.py'
+        settings.write_text(
+            '\n'.join([
+                f'application = {str(app)!r}',
+                f'volume_icon = {str(volume_icon)!r}',
+                "files = [application]",
+                "symlinks = {'Applications': '/Applications'}",
+                "icon = volume_icon",
+                "icon_locations = {'Folio.app': (150, 175), 'Applications': (490, 175)}",
+                "background = 'builtin-arrow'",
+                "window_rect = ((120, 120), (640, 360))",
+                "default_view = 'icon-view'",
+                "show_status_bar = False",
+                "show_tab_view = False",
+                "show_toolbar = False",
+                "show_pathbar = False",
+                "show_sidebar = False",
+                "show_icon_preview = False",
+                "include_icon_view_settings = True",
+                "arrange_by = None",
+                "label_pos = 'bottom'",
+                "text_size = 14",
+                "icon_size = 112",
+                "format = 'UDZO'",
+            ]) + '\n',
+            encoding='utf-8',
+        )
+        run(
+            sys.executable, '-m', 'dmgbuild',
+            '-s', settings,
+            'Folio',
+            dmg,
+        )
     return dmg
 
 
@@ -201,7 +229,7 @@ def main():
         print('Created:', target)
 
         if args.dmg:
-            dmg = create_dmg(target, output_dir)
+            dmg = create_dmg(target, output_dir, icon)
             notarized = notarize_if_configured(dmg)
             print('Created:', dmg)
             print('Notarized:' if notarized else 'Not notarized (Developer ID secrets were not configured):', dmg)
