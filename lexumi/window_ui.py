@@ -124,13 +124,13 @@ class WindowUiMixin:
         view_menu.addAction(self.action('Fit Height', lambda: self.set_zoom('Fit Height')))
 
         help_menu = self.menuBar().addMenu('Help')
-        help_menu.addAction(self.action('About Folio', self.about))
+        help_menu.addAction(self.action('About Lexumi', self.about))
 
         self.splitter = QSplitter()
         self.sidebar = QWidget()
         side = QVBoxLayout(self.sidebar)
         side.setContentsMargins(18, 18, 12, 14)
-        brand = QLabel('FOLIO')
+        brand = QLabel('LEXUMI')
         brand.setObjectName('brand')
         side.addWidget(brand)
         subtitle = QLabel('Your library. On your Mac.')

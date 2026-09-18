@@ -2,8 +2,8 @@
 import sys
 
 if '--worker' in sys.argv:
-    from folio.engine_v036 import worker
+    from lexumi.engine_v036 import worker
     worker()
 else:
-    from folio.app import main
+    from lexumi.app import main
     main()

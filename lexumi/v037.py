@@ -415,8 +415,8 @@ class WindowV037Mixin:
     def about(self):
         QMessageBox.about(
             self,
-            'About Folio',
-            'Folio 0.3.7\nOffline ebook & document reader for macOS Apple Silicon.\n\n'
+            'About Lexumi',
+            'Lexumi 0.3.7\nOffline ebook & document reader for macOS Apple Silicon.\n\n'
             'PDF · DjVu · EPUB · FB2 / FB2.ZIP · MOBI / PRC\n'
             'TXT · XPS / OXPS · CBZ / CBR · images\n\n'
             'Continuous scrolling, one-page and two-page reading, ebook covers with first-page fallback, '

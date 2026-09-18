@@ -77,7 +77,7 @@ def select_chevron_icon(color: str) -> QIcon:
     return QIcon(pixmap)
 
 
-class FolioSelect(QPushButton):
+class LexumiSelect(QPushButton):
     currentIndexChanged = Signal(int)
 
     def __init__(self, items: list[tuple[str, object]], dark: bool = False, parent=None):
@@ -142,20 +142,20 @@ class PrintPreviewDialog(PrintPreviewDialogV039):
         dark = bool(getattr(window, 'dark', False))
         self.pages_mode = self._replace_select(
             self.pages_mode,
-            FolioSelect([('All pages', 'all'), ('Current page', 'current'), ('Custom range', 'custom')], dark, self),
+            LexumiSelect([('All pages', 'all'), ('Current page', 'current'), ('Custom range', 'custom')], dark, self),
             self.mode_changed,
         )
         self.pages_per_sheet_combo = self._replace_select(
             self.pages_per_sheet_combo,
-            FolioSelect([('1', 1), ('2', 2), ('4', 4), ('6', 6)], dark, self),
+            LexumiSelect([('1', 1), ('2', 2), ('4', 4), ('6', 6)], dark, self),
             self.rebuild_preview,
         )
         self.scale_mode = self._replace_select(
             self.scale_mode,
-            FolioSelect([('Fit to paper', 'fit'), ('Actual size', 'actual'), ('Custom', 'custom')], dark, self),
+            LexumiSelect([('Fit to paper', 'fit'), ('Actual size', 'actual'), ('Custom', 'custom')], dark, self),
             self.scale_changed,
         )
-        self.apply_folio_style()
+        self.apply_lexumi_style()
         self.rebuild_preview()
 
     def _replace_select(self, old_widget, new_widget, slot):
@@ -166,8 +166,8 @@ class PrintPreviewDialog(PrintPreviewDialogV039):
         new_widget.currentIndexChanged.connect(slot)
         return new_widget
 
-    def apply_folio_style(self):
-        super().apply_folio_style()
+    def apply_lexumi_style(self):
+        super().apply_lexumi_style()
         dark = bool(getattr(self.window, 'dark', False))
         if dark:
             panel, ink, border, input_bg, accent = '#1d232b', '#eef2f7', '#3b4654', '#252d37', '#3aa675'
@@ -270,8 +270,8 @@ class WindowV0310Mixin(WindowV039Mixin):
 
     def about(self):
         QMessageBox.about(
-            self, 'About Folio',
-            'Folio 0.3.10\nOffline ebook & document reader for macOS Apple Silicon.\n\n'
+            self, 'About Lexumi',
+            'Lexumi 0.3.10\nOffline ebook & document reader for macOS Apple Silicon.\n\n'
             'PDF · DjVu · EPUB · FB2 / FB2.ZIP · MOBI / PRC\nTXT · XPS / OXPS · CBZ / CBR · images\n\n'
             'Continuous scrolling, embedded ebook covers, two-page spreads, text search, bookmarks, '
             'multi-sheet print preview, N-up printing, open-ended print ranges, and PDF export.\n'

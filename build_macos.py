@@ -1,4 +1,4 @@
-"""Build a standalone Apple Silicon Folio.app and optional branded DMG release artifact."""
+"""Build a standalone Apple Silicon Lexumi.app and optional branded DMG release artifact."""
 from __future__ import annotations
 
 import argparse
@@ -11,9 +11,9 @@ import subprocess
 import sys
 import tempfile
 
-from folio import __version__ as VERSION
+from lexumi import __version__ as VERSION
 
-BUNDLE_ID = 'tech.itroadmaps.folio'
+BUNDLE_ID = 'tech.itroadmaps.lexumi'
 DJVU_TOOLS = ('ddjvu', 'djvused', 'djvutxt', 'djvudump')
 
 
@@ -26,7 +26,7 @@ def make_icon(folder):
     from PySide6.QtCore import QRectF, Qt
     from PySide6.QtGui import QImage, QPainter, QColor, QPen, QPainterPath
 
-    iconset = folder / 'Folio.iconset'
+    iconset = folder / 'Lexumi.iconset'
     iconset.mkdir()
     for size in (16, 32, 128, 256, 512):
         for scale in (1, 2):
@@ -55,7 +55,7 @@ def make_icon(folder):
             p.end()
             suffix = '@2x' if scale == 2 else ''
             image.save(str(iconset / f'icon_{size}x{size}{suffix}.png'))
-    icon = folder / 'Folio.icns'
+    icon = folder / 'Lexumi.icns'
     run('/usr/bin/iconutil', '-c', 'icns', iconset, '-o', icon)
     return icon
 
@@ -74,7 +74,7 @@ def locate_djvu_tool(name):
 def pyinstaller_command(root, temp, icon):
     cmd = [
         sys.executable, '-m', 'PyInstaller', '--noconfirm', '--clean', '--windowed',
-        '--name', 'Folio', '--target-architecture', 'arm64',
+        '--name', 'Lexumi', '--target-architecture', 'arm64',
         '--osx-bundle-identifier', BUNDLE_ID, '--icon', str(icon),
         '--distpath', str(temp / 'dist'), '--workpath', str(temp / 'work'),
         '--specpath', str(temp), '--paths', str(root),
@@ -99,8 +99,8 @@ def configure_info_plist(app):
         'txt', 'png', 'jpg', 'jpeg', 'tif', 'tiff', 'bmp', 'gif', 'svg'
     ]
     data.update(
-        CFBundleDisplayName='Folio',
-        CFBundleName='Folio',
+        CFBundleDisplayName='Lexumi',
+        CFBundleName='Lexumi',
         CFBundleShortVersionString=VERSION,
         CFBundleVersion='2',
         NSHighResolutionCapable=True,
@@ -136,7 +136,7 @@ def verify_standalone(app):
 
 
 def sign_app(app):
-    identity = os.environ.get('FOLIO_CODESIGN_IDENTITY', '').strip()
+    identity = os.environ.get('LEXUMI_CODESIGN_IDENTITY', '').strip()
     if identity:
         run('/usr/bin/codesign', '--force', '--deep', '--options', 'runtime', '--timestamp', '--sign', identity, app)
     else:
@@ -146,11 +146,11 @@ def sign_app(app):
 
 
 def create_dmg(app, output_dir, volume_icon):
-    """Create a Finder-friendly drag-to-Applications DMG with Folio branding."""
-    dmg = output_dir / 'Folio-macOS-arm64.dmg'
+    """Create a Finder-friendly drag-to-Applications DMG with Lexumi branding."""
+    dmg = output_dir / 'Lexumi-macOS-arm64.dmg'
     dmg.unlink(missing_ok=True)
 
-    with tempfile.TemporaryDirectory(prefix='folio-dmg-') as temp_name:
+    with tempfile.TemporaryDirectory(prefix='lexumi-dmg-') as temp_name:
         temp = Path(temp_name)
         settings = temp / 'dmg_settings.py'
         settings.write_text(
@@ -160,7 +160,7 @@ def create_dmg(app, output_dir, volume_icon):
                 "files = [application]",
                 "symlinks = {'Applications': '/Applications'}",
                 "icon = volume_icon",
-                "icon_locations = {'Folio.app': (150, 175), 'Applications': (490, 175)}",
+                "icon_locations = {'Lexumi.app': (150, 175), 'Applications': (490, 175)}",
                 "background = 'builtin-arrow'",
                 "window_rect = ((120, 120), (640, 360))",
                 "default_view = 'icon-view'",
@@ -182,7 +182,7 @@ def create_dmg(app, output_dir, volume_icon):
         run(
             sys.executable, '-m', 'dmgbuild',
             '-s', settings,
-            'Folio',
+            'Lexumi',
             dmg,
         )
     return dmg
@@ -207,22 +207,22 @@ def main():
     args = parser.parse_args()
 
     if sys.platform != 'darwin' or platform.machine() != 'arm64':
-        raise SystemExit('Build Folio on an Apple Silicon macOS runner without Rosetta.')
+        raise SystemExit('Build Lexumi on an Apple Silicon macOS runner without Rosetta.')
 
     root = Path(__file__).resolve().parent
     output_dir = (root / args.output).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    with tempfile.TemporaryDirectory(prefix='folio-build-') as tmp:
+    with tempfile.TemporaryDirectory(prefix='lexumi-build-') as tmp:
         temp = Path(tmp)
         icon = make_icon(temp)
         run(*pyinstaller_command(root, temp, icon), cwd=root)
-        app = temp / 'dist/Folio.app'
+        app = temp / 'dist/Lexumi.app'
         configure_info_plist(app)
         verify_standalone(app)
         sign_app(app)
 
-        target = output_dir / 'Folio.app'
+        target = output_dir / 'Lexumi.app'
         if target.exists():
             shutil.rmtree(target)
         shutil.copytree(app, target, symlinks=True)
