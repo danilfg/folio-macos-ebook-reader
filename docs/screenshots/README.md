@@ -1,14 +1,15 @@
 # Application screenshots
 
-Add screenshots here so README and search results show the current Folio UI rather than an outdated build.
+Upload the current Folio screenshots to this directory using these exact filenames:
 
-Recommended names and content:
+- `library.png` — library sidebar with multiple books and cover thumbnails
+- `two-page-mode.png` — light-theme two-page spread reader
+- `reader-dark.png` — single-page reader in dark mode
+- `reader-light.png` — single-page reader in light mode
+- `print-preview.png` — Folio print preview with custom range and pages-per-sheet controls
 
-- `reader-light.png` — main reader, sidebar visible, at least two pages in the continuous vertical view
-- `reader-dark.png` — same reader in dark mode
-- `print-preview.png` — Folio print preview dialog
-- `export-menu.png` — toolbar Export as… menu showing PDF
+The root README references these files directly, so once they are uploaded with these exact names, the screenshots appear automatically on the repository front page.
 
-Recommended capture size: at least 1440 px wide on a Retina Mac. Avoid personal file paths, private book titles, account names or other identifying information.
+Recommended capture size: at least 1440 px wide on a Retina Mac. Avoid personal file paths, account names, or other identifying information.
 
-For GitHub social sharing, create a separate 1280×640 image and upload it in **Repository Settings → General → Social preview**. Do not store private or licensed book pages in the public repository.
+For GitHub social sharing, create a separate 1280×640 image and upload it in **Repository Settings → General → Social preview**.
