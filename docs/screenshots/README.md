@@ -13,3 +13,6 @@ The root README references these files directly, so once they are uploaded with 
 Recommended capture size: at least 1440 px wide on a Retina Mac. Avoid personal file paths, account names, or other identifying information.
 
 For GitHub social sharing, create a separate 1280×640 image and upload it in **Repository Settings → General → Social preview**.
+
+
+After a product rename, recapture every screenshot from the current build. Do not reuse screenshots showing an earlier product name.
