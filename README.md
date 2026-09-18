@@ -13,10 +13,10 @@
 
 **[Open the latest Folio release](https://github.com/danilfg/folio-macos-ebook-reader/releases/latest)**
 
-Download the versioned DMG asset, for example:
+Download the versioned DMG asset:
 
 ```text
-Folio-0.3.2-macOS-arm64.dmg
+Folio-<version>-macOS-arm64.dmg
 ```
 
 1. Open the latest GitHub Release.
@@ -79,10 +79,11 @@ Folio is intended for people who want a lightweight **Mac ebook reader**, **DjVu
 | MOBI / PRC | MuPDF | Legacy Mobipocket support; no DRM |
 | XPS / OXPS | MuPDF | Support depends on the document |
 | CBZ | MuPDF | ZIP-based comics |
+| CBR / RAR | Folio + libarchive | RAR-based comics |
 | TXT | Folio + MuPDF | UTF-8, UTF-16 BOM and Windows-1251 |
 | PNG/JPEG/TIFF/BMP/GIF/SVG | MuPDF | Static image viewing |
 
-Not supported: DRM, AZW3/KFX, CHM, CBR/RAR, DOC/DOCX and OCR generation.
+Not supported: DRM, AZW3/KFX, CHM, DOC/DOCX and OCR generation.
 
 ## DjVu → PDF export
 
@@ -111,8 +112,6 @@ The exported PDF contains rendered page images. Existing hidden DjVu OCR text is
 ### Print preview
 
 ![Folio print preview with custom range and pages per sheet](docs/screenshots/print-preview.png)
-
-The source screenshots are stored in [`docs/screenshots/`](docs/screenshots/README.md).
 
 
 ## Keyboard shortcuts
@@ -162,11 +161,6 @@ dist/Folio.app
 dist/Folio-macOS-arm64.dmg
 ```
 
-The GitHub Release workflow renames the DMG to include the release version before publishing, for example:
-
-```text
-Folio-0.3.2-macOS-arm64.dmg
-```
 
 ## Architecture
 
