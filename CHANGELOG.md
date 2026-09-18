@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased — Lexumi rebrand
+## 0.4.0 — 2026-09-18
 
 - Renamed the product, UI, package, build artifacts and documentation to **Lexumi**.
 - Changed the macOS bundle identifier to `tech.itroadmaps.lexumi` before App Store distribution.
