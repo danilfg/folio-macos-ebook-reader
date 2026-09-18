@@ -5,8 +5,8 @@ import unittest
 if not os.environ.get('DISPLAY'):
     os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 
-from folio.app import Application, Window
-from folio.v034 import CompactBookRow
+from lexumi.app import Application, Window
+from lexumi.v034 import CompactBookRow
 
 
 class V034SmokeTests(unittest.TestCase):
@@ -16,8 +16,8 @@ class V034SmokeTests(unittest.TestCase):
 
     def test_ui_overrides_load(self):
         with tempfile.TemporaryDirectory() as tmp:
-            old = os.environ.get('FOLIO_DATA_DIR')
-            os.environ['FOLIO_DATA_DIR'] = tmp
+            old = os.environ.get('LEXUMI_DATA_DIR')
+            os.environ['LEXUMI_DATA_DIR'] = tmp
             window = Window()
             window.show()
             self.app.processEvents()
@@ -31,9 +31,9 @@ class V034SmokeTests(unittest.TestCase):
             window.close()
             self.app.processEvents()
             if old is None:
-                os.environ.pop('FOLIO_DATA_DIR', None)
+                os.environ.pop('LEXUMI_DATA_DIR', None)
             else:
-                os.environ['FOLIO_DATA_DIR'] = old
+                os.environ['LEXUMI_DATA_DIR'] = old
 
 
 if __name__ == '__main__':

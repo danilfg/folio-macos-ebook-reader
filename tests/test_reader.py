@@ -11,8 +11,8 @@ import pymupdf as fitz
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
-from folio.engine import Book, executable
-from folio.storage import Library
+from lexumi.engine import Book, executable
+from lexumi.storage import Library
 from make_samples import make as make_samples
 
 
@@ -137,7 +137,7 @@ class ReaderTests(unittest.TestCase):
         book = Book(path)
         self.assertEqual(book.count,2)
         self.assertTrue(book.render(1,600)['image'])
-        self.assertIn('Folio',book.text(0))
+        self.assertIn('Lexumi',book.text(0))
         self.assertEqual(book.find('SECOND',0),1)
         with tempfile.TemporaryDirectory() as folder:
             output = Path(folder)/'djvu-export.pdf'

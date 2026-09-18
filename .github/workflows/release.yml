@@ -19,7 +19,7 @@ permissions:
   contents: write
 
 env:
-  FOLIO_CODESIGN_IDENTITY: ${{ secrets.FOLIO_CODESIGN_IDENTITY }}
+  LEXUMI_CODESIGN_IDENTITY: ${{ secrets.LEXUMI_CODESIGN_IDENTITY }}
   MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
   MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
   APPLE_ID: ${{ secrets.APPLE_ID }}
@@ -48,7 +48,7 @@ jobs:
             exit 1
           fi
           VERSION_NUMBER="${VERSION#v}"
-          ASSET="Folio-${VERSION_NUMBER}-macOS-arm64.dmg"
+          ASSET="Lexumi-${VERSION_NUMBER}-macOS-arm64.dmg"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "version_number=$VERSION_NUMBER" >> "$GITHUB_OUTPUT"
           echo "asset=$ASSET" >> "$GITHUB_OUTPUT"
@@ -65,8 +65,8 @@ jobs:
       - name: Import Developer ID certificate when configured
         if: env.MACOS_CERTIFICATE != ''
         run: |
-          CERT_PATH="$RUNNER_TEMP/folio.p12"
-          KEYCHAIN_PATH="$RUNNER_TEMP/folio-signing.keychain-db"
+          CERT_PATH="$RUNNER_TEMP/lexumi.p12"
+          KEYCHAIN_PATH="$RUNNER_TEMP/lexumi-signing.keychain-db"
           echo "$MACOS_CERTIFICATE" | base64 --decode > "$CERT_PATH"
           security create-keychain -p actions "$KEYCHAIN_PATH"
           security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
@@ -83,7 +83,7 @@ jobs:
       - name: Build standalone app and DMG
         run: |
           .venv/bin/python build_macos.py --dmg --output dist
-          mv dist/Folio-macOS-arm64.dmg "dist/${{ steps.version.outputs.asset }}"
+          mv dist/Lexumi-macOS-arm64.dmg "dist/${{ steps.version.outputs.asset }}"
 
       - name: Create checksum
         run: |
@@ -109,5 +109,5 @@ jobs:
               "dist/$CHECKSUM" \
               --target "$GITHUB_SHA" \
               --generate-notes \
-              --title "Folio ${VERSION#v}"
+              --title "Lexumi ${VERSION#v}"
           fi

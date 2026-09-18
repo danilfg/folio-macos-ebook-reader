@@ -17,8 +17,8 @@ from PySide6.QtPrintSupport import QPrintDialog, QPrinter
 from PySide6.QtTest import QTest
 from PySide6.QtWidgets import QAbstractSpinBox, QDialog, QFileDialog
 import pymupdf as fitz
-from folio.app import Application, PrintPreviewDialog, Window
-from folio.ui_shared import BookListItemWidget
+from lexumi.app import Application, PrintPreviewDialog, Window
+from lexumi.ui_shared import BookListItemWidget
 from make_samples import make as make_samples
 
 
@@ -31,8 +31,8 @@ class UiTests(unittest.TestCase):
 
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
-        self.old_dir = os.environ.get('FOLIO_DATA_DIR')
-        os.environ['FOLIO_DATA_DIR'] = self.temp.name
+        self.old_dir = os.environ.get('LEXUMI_DATA_DIR')
+        os.environ['LEXUMI_DATA_DIR'] = self.temp.name
         self.window = Window()
         self.errors = []
         self.window.error = self.errors.append
@@ -45,9 +45,9 @@ class UiTests(unittest.TestCase):
         self.app.processEvents()
         self.temp.cleanup()
         if self.old_dir is None:
-            os.environ.pop('FOLIO_DATA_DIR', None)
+            os.environ.pop('LEXUMI_DATA_DIR', None)
         else:
-            os.environ['FOLIO_DATA_DIR'] = self.old_dir
+            os.environ['LEXUMI_DATA_DIR'] = self.old_dir
 
     def wait_for(self, predicate, timeout=10):
         deadline = time.monotonic() + timeout
