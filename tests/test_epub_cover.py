@@ -3,7 +3,7 @@ import tempfile
 import unittest
 import zipfile
 
-from folio.engine_v036 import epub_cover_bytes
+from lexumi.engine_v036 import epub_cover_bytes
 
 
 class EpubCoverTests(unittest.TestCase):

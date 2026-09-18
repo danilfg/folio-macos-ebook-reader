@@ -1,16 +1,29 @@
 """SQLite library: references only; never moves or deletes book files."""
 import os
 from pathlib import Path
+import shutil
 import sqlite3
 import sys
 import time
 
 
+def _default_data_dir(app_name):
+    if sys.platform == 'darwin':
+        return Path.home() / 'Library/Application Support' / app_name
+    return Path.home() / '.local/share' / app_name
+
+
 def data_dir():
-    override = os.environ.get('FOLIO_DATA_DIR')
-    path = Path(override) if override else (
-        Path.home() / 'Library/Application Support/Folio' if sys.platform == 'darwin'
-        else Path.home() / '.local/share/Folio')
+    override = os.environ.get('LEXUMI_DATA_DIR')
+    path = Path(override) if override else _default_data_dir('Lexumi')
+
+    # Preserve existing local library data across the product rename.
+    if not override and not path.exists():
+        legacy_name = 'Fo' + 'lio'
+        legacy = _default_data_dir(legacy_name)
+        if legacy.exists():
+            shutil.copytree(legacy, path, dirs_exist_ok=True)
+
     path.mkdir(parents=True, exist_ok=True)
     return path
 

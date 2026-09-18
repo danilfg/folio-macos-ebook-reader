@@ -17,7 +17,7 @@ from .window_commands import WindowCommandsMixin
 class Window(WindowV0310Mixin, WindowV039Mixin, WindowV038Mixin, WindowV037Mixin, WindowV036Mixin, WindowV035Mixin, WindowV034Mixin, WindowUiMixin, WindowLibraryMixin, WindowReaderMixin, WindowCommandsMixin, QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle('Folio — ebook & document reader')
+        self.setWindowTitle('Lexumi — ebook & document reader')
         self.resize(1280, 880)
         self.setMinimumSize(900, 620)
         self.setAcceptDrops(True)
@@ -77,8 +77,8 @@ class Application(QApplication):
 
 def main():
     app = Application(sys.argv)
-    app.setApplicationName('Folio')
-    app.setOrganizationName('FolioReader')
+    app.setApplicationName('Lexumi')
+    app.setOrganizationName('LexumiReader')
     app.setFont(QFont('Helvetica Neue', 13))
     window = Window()
     app.window = window

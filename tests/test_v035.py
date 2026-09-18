@@ -3,7 +3,7 @@ from pathlib import Path
 import unittest
 import zipfile
 
-from folio.engine_v035 import epub_cover_bytes, is_rar_archive, natural_key
+from lexumi.engine_v035 import epub_cover_bytes, is_rar_archive, natural_key
 
 
 class V035Tests(unittest.TestCase):

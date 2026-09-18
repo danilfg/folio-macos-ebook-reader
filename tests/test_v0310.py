@@ -1,6 +1,6 @@
 import unittest
 
-from folio.v0310 import landscape_for_pages_per_sheet, parse_page_range
+from lexumi.v0310 import landscape_for_pages_per_sheet, parse_page_range
 
 
 class V0310PrintTests(unittest.TestCase):

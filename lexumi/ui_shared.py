@@ -77,7 +77,7 @@ class EngineClient(QWidget):
 
     def request(self, op, callback, **args):
         if self.proc.state() == QProcess.ProcessState.NotRunning:
-            callback({'error': 'The reading engine stopped. Restart Folio.', 'kind': 'RuntimeError'})
+            callback({'error': 'The reading engine stopped. Restart Lexumi.', 'kind': 'RuntimeError'})
             return
         self.seq += 1
         self.callbacks[self.seq] = callback
@@ -99,7 +99,7 @@ class EngineClient(QWidget):
     def finished(self, code, status):
         callbacks, self.callbacks = self.callbacks, {}
         for callback in callbacks.values():
-            callback({'error': 'The reading engine stopped. Restart Folio.', 'kind': 'RuntimeError'})
+            callback({'error': 'The reading engine stopped. Restart Lexumi.', 'kind': 'RuntimeError'})
 
     def stop(self):
         self.callbacks.clear()

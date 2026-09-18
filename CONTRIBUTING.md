@@ -1,6 +1,6 @@
-# Contributing to Folio
+# Contributing to Lexumi
 
-Thanks for helping improve Folio.
+Thanks for helping improve Lexumi.
 
 ## Before opening a pull request
 

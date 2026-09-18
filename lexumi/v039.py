@@ -111,7 +111,7 @@ class PrintSheetWidget(QLabel):
 
 
 class PrintPreviewDialog(QDialog):
-    """Folio-styled multi-sheet print preview with N-up imposition."""
+    """Lexumi-styled multi-sheet print preview with N-up imposition."""
 
     def __init__(self, window):
         super().__init__(window)
@@ -232,7 +232,7 @@ class PrintPreviewDialog(QDialog):
         side.addLayout(buttons)
 
         root.addWidget(settings)
-        self.apply_folio_style()
+        self.apply_lexumi_style()
         self.rebuild_preview()
 
     def _add_field_label(self, layout, text):
@@ -240,7 +240,7 @@ class PrintPreviewDialog(QDialog):
         label.setObjectName('printFieldLabel')
         layout.addWidget(label)
 
-    def apply_folio_style(self):
+    def apply_lexumi_style(self):
         dark = bool(getattr(self.window, 'dark', False))
         if dark:
             canvas, panel, ink, muted, border, input_bg, accent, accent_hover = (
@@ -449,7 +449,7 @@ class PrintPreviewDialog(QDialog):
 
 
 class WindowV039Mixin:
-    """v0.3.9: Folio-styled multi-sheet print preview and N-up printing."""
+    """v0.3.9: Lexumi-styled multi-sheet print preview and N-up printing."""
 
     def print_book(self):
         if not self.meta or self.working or self.opening:
@@ -581,8 +581,8 @@ class WindowV039Mixin:
     def about(self):
         QMessageBox.about(
             self,
-            'About Folio',
-            'Folio 0.3.9\nOffline ebook & document reader for macOS Apple Silicon.\n\n'
+            'About Lexumi',
+            'Lexumi 0.3.9\nOffline ebook & document reader for macOS Apple Silicon.\n\n'
             'PDF · DjVu · EPUB · FB2 / FB2.ZIP · MOBI / PRC\nTXT · XPS / OXPS · CBZ / CBR · images\n\n'
             'Continuous scrolling, embedded ebook covers, two-page spreads, text search, bookmarks, '
             'multi-sheet print preview, N-up printing, and PDF export.\n'

@@ -180,8 +180,8 @@ class WindowV034Mixin:
     def about(self):
         QMessageBox.about(
             self,
-            'About Folio',
-            'Folio 0.3.4\nOffline ebook & document reader for macOS Apple Silicon.\n\n'
+            'About Lexumi',
+            'Lexumi 0.3.4\nOffline ebook & document reader for macOS Apple Silicon.\n\n'
             'PDF · DjVu · EPUB · FB2 / FB2.ZIP · MOBI / PRC\nTXT · XPS / OXPS · CBZ · images\n\n'
             'Continuous scrolling, text search, bookmarks, print preview, and PDF export.\n'
             'OCR and DRM are not supported.\n\nPySide6 / Qt, PyMuPDF, DjVuLibre.\nAGPL-3.0-or-later.'

@@ -34,13 +34,13 @@ def executable(name):
     bundled = Path(getattr(sys, '_MEIPASS', '')) / 'djvu' / 'bin' / name if getattr(sys, '_MEIPASS', None) else None
     if bundled and bundled.is_file():
         return str(bundled)
-    for root in (os.environ.get('FOLIO_DJVU_BIN', ''), '/opt/homebrew/bin', '/usr/local/bin'):
+    for root in (os.environ.get('LEXUMI_DJVU_BIN', ''), '/opt/homebrew/bin', '/usr/local/bin'):
         if root and (Path(root) / name).is_file():
             return str(Path(root) / name)
     found = shutil.which(name)
     if found:
         return found
-    raise RuntimeError('DjVuLibre was not found. Install DjVuLibre or use the official Folio DMG, which bundles the required DjVu tools.')
+    raise RuntimeError('DjVuLibre was not found. Install DjVuLibre or use the official Lexumi DMG, which bundles the required DjVu tools.')
 
 
 def run_djvu(name, *args, timeout=90):
@@ -179,9 +179,9 @@ class Book:
             raise PermissionError('The PDF author disabled printing and export.')
         target = Path(target).expanduser().resolve()
         if target == self.path or (target.exists() and os.path.samefile(target, self.path)):
-            raise ValueError('Choose a different file name. Folio never overwrites the source book.')
+            raise ValueError('Choose a different file name. Lexumi never overwrites the source book.')
         target.parent.mkdir(parents=True, exist_ok=True)
-        fd, temp_name = tempfile.mkstemp(suffix='.pdf', prefix='.folio-', dir=target.parent)
+        fd, temp_name = tempfile.mkstemp(suffix='.pdf', prefix='.lexumi-', dir=target.parent)
         os.close(fd)
         temp = Path(temp_name); temp.unlink(missing_ok=True)
         try:

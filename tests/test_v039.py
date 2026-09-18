@@ -1,6 +1,6 @@
 import unittest
 
-from folio.v039 import chunk_pages, grid_for_pages, parse_page_range
+from lexumi.v039 import chunk_pages, grid_for_pages, parse_page_range
 
 
 class V039PrintTests(unittest.TestCase):

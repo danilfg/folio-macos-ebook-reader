@@ -222,7 +222,7 @@ class WindowReaderMixin:
             if 'error' in response:
                 self.error(response['error'])
             elif response['result'] is None:
-                self.statusBar().showMessage('Text not found. Scanned books need an embedded text layer; Folio does not run OCR.')
+                self.statusBar().showMessage('Text not found. Scanned books need an embedded text layer; Lexumi does not run OCR.')
             else:
                 self.invalidate_visible_renders()
                 self.go(response['result'])

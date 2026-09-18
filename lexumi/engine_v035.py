@@ -220,7 +220,7 @@ class Book(BaseBook):
             self.title = self.path.stem
             self.toc = []
             self.can_print = self.can_copy = True
-            self._comic_temp = tempfile.TemporaryDirectory(prefix='folio-cbr-')
+            self._comic_temp = tempfile.TemporaryDirectory(prefix='lexumi-cbr-')
             target = Path(self._comic_temp.name)
             try:
                 extract_rar(self.path, target)
@@ -312,9 +312,9 @@ class Book(BaseBook):
             return super().export_pdf(target)
         target = Path(target).expanduser().resolve()
         if target == self.path or (target.exists() and os.path.samefile(target, self.path)):
-            raise ValueError('Choose a different file name. Folio never overwrites the source book.')
+            raise ValueError('Choose a different file name. Lexumi never overwrites the source book.')
         target.parent.mkdir(parents=True, exist_ok=True)
-        fd, temp_name = tempfile.mkstemp(suffix='.pdf', prefix='.folio-', dir=target.parent)
+        fd, temp_name = tempfile.mkstemp(suffix='.pdf', prefix='.lexumi-', dir=target.parent)
         os.close(fd)
         temp = Path(temp_name)
         temp.unlink(missing_ok=True)

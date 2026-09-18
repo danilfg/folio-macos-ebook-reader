@@ -196,12 +196,12 @@ class WindowCommandsMixin:
 
     def error(self, message):
         self.statusBar().showMessage('Operation failed')
-        QMessageBox.warning(self, 'Folio', message)
+        QMessageBox.warning(self, 'Lexumi', message)
 
     def about(self):
         QMessageBox.about(
-            self, 'About Folio',
-            'Folio 0.3.2\nOffline ebook & document reader for macOS Apple Silicon.\n\n'
+            self, 'About Lexumi',
+            'Lexumi 0.3.2\nOffline ebook & document reader for macOS Apple Silicon.\n\n'
             'PDF · DjVu · EPUB · FB2 / FB2.ZIP · MOBI / PRC\nTXT · XPS / OXPS · CBZ · images\n\n'
             'Continuous scrolling, text search, bookmarks, print preview, and PDF export.\n'
             'OCR and DRM are not supported.\n\nPySide6 / Qt, PyMuPDF, DjVuLibre.\nAGPL-3.0-or-later.'
@@ -232,7 +232,7 @@ class WindowCommandsMixin:
 
     def closeEvent(self, event):
         if getattr(self, 'export_in_progress', False):
-            self.statusBar().showMessage('PDF export is still running. Wait for it to finish before closing Folio.')
+            self.statusBar().showMessage('PDF export is still running. Wait for it to finish before closing Lexumi.')
             event.ignore()
             return
         if self.working:

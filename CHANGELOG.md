@@ -1,8 +1,17 @@
 # Changelog
 
+## 0.4.0 — 2026-09-18
+
+- Renamed the product, UI, package, build artifacts and documentation to **Lexumi**.
+- Changed the macOS bundle identifier to `tech.itroadmaps.lexumi` before App Store distribution.
+- Renamed release artifacts to `Lexumi-<version>-macOS-arm64.dmg`.
+- Added first-run migration of the existing local library database into `~/Library/Application Support/Lexumi`.
+- Removed pre-rebrand screenshots so the repository does not display stale branding.
+
+
 ## 0.3.10 — 2026-09-17
 
-- Replaced the native-looking print combo boxes with Folio-styled select controls and a cleaner popup menu/chevron.
+- Replaced the native-looking print combo boxes with Lexumi-styled select controls and a cleaner popup menu/chevron.
 - An empty `Custom range` now means all pages instead of showing an error.
 - Added open-ended page ranges: `5-` prints page 5 through the end, and `-5` prints the beginning through page 5.
 - Two-page and six-page N-up layouts now use landscape/wide sheets in both preview and the default printer orientation.
@@ -11,21 +20,21 @@
 
 ## 0.3.9 — 2026-09-17
 
-- Rebuilt Print Preview in Folio's visual style with the preview canvas on the left and print settings on the right.
+- Rebuilt Print Preview in Lexumi's visual style with the preview canvas on the left and print settings on the right.
 - `All pages` now creates a preview for the full document instead of showing only the current page.
 - Added `Current page` and live `Custom range` support such as `1-5, 8, 11-13`.
 - Added `Pages per sheet` options for 1, 2, 4 and 6 pages with live N-up sheet previews.
 - Added `Fit to paper`, `Actual size` and custom percentage scale modes.
 - Large documents use lazy print-preview rendering: only nearby sheets are rendered and off-screen preview pixmaps are released.
 - Actual printing now respects the selected N-up layout, so 2/4/6-page preview layouts are also sent to the printer that way.
-- Kept printer selection, paper size, copies and PDF destination in the native macOS print dialog after the Folio preview.
+- Kept printer selection, paper size, copies and PDF destination in the native macOS print dialog after the Lexumi preview.
 - Added regression tests for custom page ranges and 1/2/4/6-page print grids.
 
 ## 0.3.8 — 2026-09-17
 
 - Rebuilt the macOS disk image as a branded installer-style DMG using `dmgbuild`.
-- The mounted Folio volume now uses the Folio application icon instead of the generic disk-image appearance.
-- The Finder window opens in icon view with `Folio.app` on the left and an `Applications` shortcut on the right.
+- The mounted Lexumi volume now uses the Lexumi application icon instead of the generic disk-image appearance.
+- The Finder window opens in icon view with `Lexumi.app` on the left and an `Applications` shortcut on the right.
 - Added a built-in drag-to-Applications arrow background and fixed icon positions for a more familiar macOS installation flow.
 - Kept the existing versioned DMG filename and SHA-256 release asset naming.
 
@@ -74,7 +83,7 @@
 
 ## 0.3.2 — 2026-09-17
 
-- macOS release assets now include the Folio version in the DMG filename, for example `Folio-0.3.2-macOS-arm64.dmg`.
+- macOS release assets now include the Lexumi version in the DMG filename, for example `Lexumi-0.3.2-macOS-arm64.dmg`.
 - SHA-256 checksum files use the same versioned filename.
 - Updated release documentation and download instructions for versioned assets.
 - Bumped the application version to 0.3.2.
@@ -107,7 +116,7 @@
 - Icon-based compact toolbar with hover tooltips.
 - Bottom-right zoom controls plus toolbar and View-menu zoom actions.
 - Dedicated **Export as…** button/menu; PDF is the first export format.
-- Folio print preview step before the native macOS print dialog.
+- Lexumi print preview step before the native macOS print dialog.
 - Standalone Apple Silicon DMG build path and automated GitHub release workflow.
 - Open-source contribution, security, issue and release documentation.
 

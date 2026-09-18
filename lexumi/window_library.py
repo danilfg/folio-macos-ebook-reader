@@ -140,7 +140,7 @@ class WindowLibraryMixin:
             self.page_spin.setValue(self.page + 1)
             self.page_spin.blockSignals(False)
             self.page_total.setText(f" / {self.meta['count']}  ")
-            self.setWindowTitle(self.meta['title'] + ' — Folio')
+            self.setWindowTitle(self.meta['title'] + ' — Lexumi')
 
             self.toc.clear()
             parents = {}
