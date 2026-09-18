@@ -15,11 +15,13 @@ git push origin v0.2.0
 
 The workflow builds `dist/Lexumi-macOS-arm64.dmg`, creates its SHA-256 file and publishes both files to a GitHub Release automatically.
 
-Users download the DMG from **Repository → Releases → Latest**, or through the stable URL:
+Users download the versioned DMG from the stable latest-release page:
 
 ```text
-https://github.com/danilfg/lexumi/releases/latest/download/Lexumi-macOS-arm64.dmg
+https://github.com/danilfg/lexumi/releases/latest
 ```
+
+Release assets are versioned as `Lexumi-<version>-macOS-arm64.dmg`.
 
 ## Developer ID signing and notarization
 
