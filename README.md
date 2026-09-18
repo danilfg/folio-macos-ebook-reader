@@ -114,7 +114,6 @@ The exported PDF contains rendered page images. Existing hidden DjVu OCR text is
 
 The source screenshots are stored in [`docs/screenshots/`](docs/screenshots/README.md).
 
-Also upload a separate 1280×640 project image in **GitHub → Settings → General → Social preview**.
 
 ## Keyboard shortcuts
 
