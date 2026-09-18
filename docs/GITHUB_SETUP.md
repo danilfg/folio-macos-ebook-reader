@@ -67,10 +67,10 @@ The stable latest-release page is:
 https://github.com/danilfg/lexumi/releases/latest
 ```
 
-The stable direct DMG URL is:
+Release assets are versioned:
 
 ```text
-https://github.com/danilfg/lexumi/releases/latest/download/Lexumi-macOS-arm64.dmg
+Lexumi-<version>-macOS-arm64.dmg
 ```
 
-If a DMG is built manually instead, upload `Lexumi-macOS-arm64.dmg` on **Releases → Draft a new release → Attach binaries**.
+If a DMG is built manually instead, use the same versioned filename and upload it on **Releases → Draft a new release → Attach binaries**.
