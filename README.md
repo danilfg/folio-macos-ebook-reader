@@ -91,29 +91,6 @@ Lexumi uses **DjVuLibre's native multi-page PDF output in a single pass**, at 16
 
 The exported PDF contains rendered page images. Existing hidden DjVu OCR text is not currently copied into the PDF output.
 
-## Screenshots
-
-### Library
-
-![Lexumi library with book covers](docs/screenshots/library.png)
-
-### Two-page reading mode
-
-![Lexumi two-page spread mode](docs/screenshots/two-page-mode.png)
-
-### Dark mode
-
-![Lexumi reader in dark mode](docs/screenshots/reader-dark.png)
-
-### Light mode
-
-![Lexumi reader in light mode](docs/screenshots/reader-light.png)
-
-### Print preview
-
-![Lexumi print preview with custom range and pages per sheet](docs/screenshots/print-preview.png)
-
-
 ## Keyboard shortcuts
 
 | Shortcut | Action |
