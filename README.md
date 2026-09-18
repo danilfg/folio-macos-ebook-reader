@@ -92,14 +92,29 @@ The exported PDF contains rendered page images. Existing hidden DjVu OCR text is
 
 ## Screenshots
 
-Put current application screenshots in [`docs/screenshots/`](docs/screenshots/README.md). Recommended files:
+### Library
 
-- `reader-light.png` — main continuous reader view
-- `reader-dark.png` — dark mode
-- `library.png` — compact library cards with thumbnails
-- `print-preview.png` — print preview
+![Folio library with book covers](docs/screenshots/library.png)
 
-Also upload a 1280×640 project image in **GitHub → Settings → General → Social preview**.
+### Two-page reading mode
+
+![Folio two-page spread mode](docs/screenshots/two-page-mode.png)
+
+### Dark mode
+
+![Folio reader in dark mode](docs/screenshots/reader-dark.png)
+
+### Light mode
+
+![Folio reader in light mode](docs/screenshots/reader-light.png)
+
+### Print preview
+
+![Folio print preview with custom range and pages per sheet](docs/screenshots/print-preview.png)
+
+The source screenshots are stored in [`docs/screenshots/`](docs/screenshots/README.md).
+
+Also upload a separate 1280×640 project image in **GitHub → Settings → General → Social preview**.
 
 ## Keyboard shortcuts
 
