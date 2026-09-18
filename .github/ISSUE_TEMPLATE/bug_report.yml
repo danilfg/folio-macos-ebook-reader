@@ -1,15 +1,15 @@
 name: Bug report
-description: Report a reproducible Folio problem
+description: Report a reproducible Lexumi problem
 title: "[Bug]: "
 labels: [bug]
 body:
   - type: markdown
     attributes:
-      value: Thanks for reporting a Folio bug. Do not attach private or copyrighted books unless you have permission to share them.
+      value: Thanks for reporting a Lexumi bug. Do not attach private or copyrighted books unless you have permission to share them.
   - type: input
     id: version
     attributes:
-      label: Folio version
+      label: Lexumi version
       placeholder: 0.2.0
     validations:
       required: true

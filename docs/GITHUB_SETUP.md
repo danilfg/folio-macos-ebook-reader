@@ -7,7 +7,7 @@ Use these values when creating the public repository.
 **Name**
 
 ```text
-folio-macos-ebook-reader
+lexumi
 ```
 
 **Description**
@@ -51,7 +51,7 @@ For the repository social preview, upload a 1280×640 PNG/JPG from **Settings �
 After creating the empty repository:
 
 ```bash
-git remote add origin git@github.com:danilfg/folio-macos-ebook-reader.git
+git remote add origin git@github.com:danilfg/lexumi.git
 git branch -M main
 git push -u origin main
 git push origin v0.2.0
@@ -64,13 +64,13 @@ Pushing the `v0.2.0` tag starts `.github/workflows/release.yml`. The workflow bu
 The stable latest-release page is:
 
 ```text
-https://github.com/danilfg/folio-macos-ebook-reader/releases/latest
+https://github.com/danilfg/lexumi/releases/latest
 ```
 
 The stable direct DMG URL is:
 
 ```text
-https://github.com/danilfg/folio-macos-ebook-reader/releases/latest/download/Folio-macOS-arm64.dmg
+https://github.com/danilfg/lexumi/releases/latest/download/Lexumi-macOS-arm64.dmg
 ```
 
-If a DMG is built manually instead, upload `Folio-macOS-arm64.dmg` on **Releases → Draft a new release → Attach binaries**.
+If a DMG is built manually instead, upload `Lexumi-macOS-arm64.dmg` on **Releases → Draft a new release → Attach binaries**.

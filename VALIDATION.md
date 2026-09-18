@@ -1,4 +1,4 @@
-# Validation status — Folio 0.2.0
+# Validation status — Lexumi 0.2.0
 
 Date: 2026-09-17.
 
