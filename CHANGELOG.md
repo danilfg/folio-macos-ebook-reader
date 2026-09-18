@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased — Lexumi rebrand
+
+- Renamed the product, UI, package, build artifacts and documentation to **Lexumi**.
+- Changed the macOS bundle identifier to `tech.itroadmaps.lexumi` before App Store distribution.
+- Renamed release artifacts to `Lexumi-<version>-macOS-arm64.dmg`.
+- Added first-run migration of the existing local library database into `~/Library/Application Support/Lexumi`.
+- Removed pre-rebrand screenshots so the repository does not display stale branding.
+
+
 ## 0.3.10 — 2026-09-17
 
 - Replaced the native-looking print combo boxes with Lexumi-styled select controls and a cleaner popup menu/chevron.
